@@ -50,7 +50,6 @@ class Play extends Phaser.Scene{
         // put another tile sprite above the ground tiles
         this.groundScroll = this.add.tileSprite(0, game.config.height-tileSize, game.config.width, tileSize, 'ground').setOrigin(0);
 
-        // set up my alien son 👽
         this.player = this.physics.add.sprite(game.config.width/6, game.config.height/2-tileSize, 'sprite', 'side').setScale(SCALE);
 
         // set up Phaser-provided cursor key input
