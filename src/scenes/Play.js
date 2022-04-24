@@ -69,11 +69,16 @@ class Play extends Phaser.Scene{
         this.physics.add.collider(this.player, platforms);
         
         addScore = this.time.addEvent({ delay: 1000, callback: this.addToScore, callbackScope: this, loop: true }); //calls addToScore every second
+
     }
 
     addToScore() {
         
         this.pScore += 10;
+    }
+
+    randomTimer() { // for future collision spawn rate
+        return Math.floor(Math.random() * 5000) + 1000;
     }
 
     update() {
