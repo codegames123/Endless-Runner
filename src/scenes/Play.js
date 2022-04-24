@@ -15,6 +15,8 @@ class Play extends Phaser.Scene{
         
     }
     create() {
+	// bg music play
+	this.sound.play('bg_music');
         // variables and settings
         this.JUMP_VELOCITY = -700;
         this.MAX_JUMPS = 2;
