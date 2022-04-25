@@ -12,7 +12,7 @@ class Play extends Phaser.Scene{
         this.load.path = 'assets/';
         //this.load.atlas('sprite', 'rocket1.png', 'kenny_sheet.json'); //atlas temporary example test. will change everything later
         this.load.spritesheet('player', 'baby_car_2.png',{ frameWidth: 200, frameHeight: 200, startFrame: 0, endFrame: 7 });
-        this.load.spritesheet('baby', 'baby_2.png',{ frameWidth: 200, frameHeight: 150, startFrame: 0, endFrame: 7 });
+        this.load.spritesheet('baby', 'baby_3.png',{ frameWidth: 200, frameHeight: 150, startFrame: 0, endFrame: 7 });
         this.load.image('rock', 'rock.png');
         this.load.image('background', 'background.jpg');
         this.load.image('ground','ground.png');
