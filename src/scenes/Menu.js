@@ -5,7 +5,7 @@ class Menu extends Phaser.Scene {
     preload() {
         //this.load.audio('baby_song', './assets/Baby_song.mp3');]
         //load background music
-        this.load.audio('bg_music', './assets/Baby_song 2.1.m4a');
+        this.load.audio('bg_music', './assets/Baby_song 2.1.wav');
     }
     
     create(){
