@@ -54,8 +54,6 @@ class Play extends Phaser.Scene{
         //     setXY: { x: 12, y: 0, stepX: 70 }
         // });
 
-        
-
         let textConfig = {
             fontFamily: 'Courier',
             fontSize: '29px',
@@ -104,11 +102,19 @@ class Play extends Phaser.Scene{
         this.gameOver = false;
         
         // spawns rock every 2 seconds and if collides with player displays Game Over and ends game song
-        this.time.addEvent({
-            delay: 2000, callback: () => {
-                if (!this.gameOver) {
-                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 - 170, 'rock');
-                    rock.body.velocity.x = -1900;
+        this.time.addEvent({delay: 2000, callback: () => {
+                let ranNumber = Math.floor(Math.random() * 2);// uses random number from 0-1 to spawn which rock
+                if (!this.gameOver && ranNumber == 0) {
+                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 - 170, 'rock'); // top rock
+                    rock.body.gravity.y = -2000;
+                    rock.body.velocity.x = -800;
+                    rock.body.velocity.y = -100;
+                }
+                if(!this.gameOver && ranNumber == 1) {
+                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 + 190, 'rock');// bottom
+                    rock.body.gravity.y = -2000;
+                    rock.body.velocity.x = -800;
+                    rock.body.velocity.y = -500;
                 }
                 this.physics.add.overlap(this.player, rock, () => {
                     gameOverSound.play();
@@ -116,12 +122,8 @@ class Play extends Phaser.Scene{
                     this.add.text(game.config.width / 2, game.config.height / 2, 'Game Over!',).setOrigin(0.5);
                     song.stop(); //stop music when game over
                 }, null, this);
-            }, callbackScope: this, loop: true
-        });
+            }, callbackScope: this, loop: true});
 
-        
-        
-        
         //if game over, stops points from adding
         addScore = this.time.addEvent({ delay: 1000, callback: this.addToScore, callbackScope: this, loop: true }); //calls addToScore every second
         
@@ -138,8 +140,10 @@ class Play extends Phaser.Scene{
 
     update() {
         // update tile sprites (tweak for more "speed")
-        this.background.tilePositionX += this.SCROLL_SPEED;
-        this.background.tilePositionY += 2;
+        if (!this.gameOver) {
+            this.background.tilePositionX += this.SCROLL_SPEED;
+            this.background.tilePositionY += 2;
+        }
         //this.groundScroll.tilePositionX += this.SCROLL_SPEED;
         //this.groundScroll.tilePositionY += this.SCROLL_SPEED;
 
