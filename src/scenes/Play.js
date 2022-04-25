@@ -36,6 +36,7 @@ class Play extends Phaser.Scene{
         platforms2.setImmovable(true);
         platforms2.body.allowGravity = false;
         // play background music
+
         let song = this.sound.add('baby_song', {loop: true}); 
         //song.play(); //plays song
         let gameOverSound = this.sound.add('game_overSound', {loop: false});
@@ -51,7 +52,7 @@ class Play extends Phaser.Scene{
         //     //setXY: { x: game.config.width/2, y: game.config.height/2},
         //     setXY: { x: 12, y: 0, stepX: 70 }
         // });
-        
+
         let textConfig = {
             fontFamily: 'Courier',
             fontSize: '29px',
