@@ -11,8 +11,8 @@ class Play extends Phaser.Scene{
     preload(){
         this.load.path = 'assets/';
         //this.load.atlas('sprite', 'rocket1.png', 'kenny_sheet.json'); //atlas temporary example test. will change everything later
-        this.load.spritesheet('player', 'baby_car_2.png',{ frameWidth: 200, frameHeight: 200, startFrame: 0, endFrame: 7 });
-        this.load.spritesheet('baby', 'baby_3.png',{ frameWidth: 200, frameHeight: 150, startFrame: 0, endFrame: 7 });
+        this.load.spritesheet('player', 'baby_car_2.png',{ frameWidth: 200, frameHeight: 200, startFrame: 0, endFrame: 7 }); // stroller
+        this.load.spritesheet('baby', 'baby_3.png',{ frameWidth: 200, frameHeight: 150, startFrame: 0, endFrame: 7 }); // baby
         this.load.image('rock', 'rock.png');
         this.load.image('background', 'background.jpg');
         this.load.image('ground','ground.png');
@@ -36,11 +36,14 @@ class Play extends Phaser.Scene{
 
         platforms2.setImmovable(true);
         platforms2.body.allowGravity = false;
-        // play background music
-
-        let song = this.sound.add('baby_song', {loop: true}); 
+        
+        
+        let song = this.sound.add('baby_song', {loop: true}); // initilizes background music
         song.play(); //plays song
-        let gameOverSound = this.sound.add('game_overSound', {loop: false});
+
+        
+        let gameOverSound = this.sound.add('game_overSound', {loop: false});//initializes game over sound
+
         //rock = new Rock(this, game.config.width + (game.config.height / 15) * 6, (game.config.height/15) * 4, 'rock', 0).setOrigin(0, 0);
         // rock = this.physics.add.sprite(game.config.width/2 + 600,game.config.height/2 - 170,'rock');
         // rock.body.velocity.x = -1900;
@@ -54,6 +57,7 @@ class Play extends Phaser.Scene{
         //     setXY: { x: 12, y: 0, stepX: 70 }
         // });
 
+        //Text formats
         let textConfig = {
             fontFamily: 'Courier',
             fontSize: '29px',
@@ -86,6 +90,7 @@ class Play extends Phaser.Scene{
         
         // put another tile sprite above the ground tiles
        // this.groundScroll = this.add.tileSprite(0, game.config.height-tileSize, game.config.width, tileSize, 'ground').setSize(24, 20).setOffset(8, 12).setOrigin(0);
+
         this.baby = this.physics.add.sprite(game.config.width/9 + 20, game.config.height/2+100, 'baby').setScale(SCALE);
         this.player = this.physics.add.sprite(game.config.width/9, game.config.height/2+100, 'player').setScale(SCALE);
         
@@ -117,7 +122,7 @@ class Play extends Phaser.Scene{
                     rock.body.velocity.y = -500;
                 }
                 this.physics.add.overlap(this.player, rock, () => {
-                    gameOverSound.play();
+                    gameOverSound.play(); // plays gameover sound
                     rock.destroy();
                     this.gameOver = true;
                     this.add.text(game.config.width / 2, game.config.height / 2, 'Game Over!',).setOrigin(0.5);
@@ -125,13 +130,12 @@ class Play extends Phaser.Scene{
                 }, null, this);
             }, callbackScope: this, loop: true});
 
-        //if game over, stops points from adding
         addScore = this.time.addEvent({ delay: 1000, callback: this.addToScore, callbackScope: this, loop: true }); //calls addToScore every second
         
     }
 
     addToScore() {
-        if(!this.gameOver)
+        if(!this.gameOver) //if game over, stops points from adding
             this.pScore += 10;
     }
 
@@ -146,7 +150,7 @@ class Play extends Phaser.Scene{
     }
 
     update() {
-        // update tile sprites (tweak for more "speed")
+        // makes background scroll diagonally (tweak for more "speed")
         if (!this.gameOver) {
             this.background.tilePositionX += this.SCROLL_SPEED;
             this.background.tilePositionY += 2;
@@ -158,7 +162,7 @@ class Play extends Phaser.Scene{
         //     rock.update();
         // }
 
-		// check if alien is grounded
+		// check if player is grounded
 	    this.player.isGrounded = this.player.body.touching.down;
 	    // if so, we have jumps to spare
 	    if(!this.gameOver && this.player.isGrounded ) {
@@ -177,6 +181,6 @@ class Play extends Phaser.Scene{
 	    	this.jumps--;
 	    	this.jumping = false;
 	    }
-        this.scoreLeft.text = this.pScore;
+        this.scoreLeft.text = this.pScore; //displays updates score +10
     }
 }
