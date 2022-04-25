@@ -15,6 +15,8 @@ class Play extends Phaser.Scene{
         
     }
     create() {
+	// bg music play
+	this.sound.play('bg_music');
         // variables and settings
         this.JUMP_VELOCITY = -700;
         this.MAX_JUMPS = 2;
@@ -29,7 +31,7 @@ class Play extends Phaser.Scene{
         platforms.setImmovable(true);
         platforms.body.allowGravity = false;
         // play background music
-        let song = this.sound.add('bg_music', {loop: true}); 
+        let song = this.sound.add('baby_song', {loop: true}); 
         //song.play(); //plays song
         
         let textConfig = {
