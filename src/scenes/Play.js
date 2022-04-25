@@ -139,6 +139,7 @@ class Play extends Phaser.Scene{
     update() {
         // update tile sprites (tweak for more "speed")
         this.background.tilePositionX += this.SCROLL_SPEED;
+        this.background.tilePositionY += 2;
         //this.groundScroll.tilePositionX += this.SCROLL_SPEED;
         //this.groundScroll.tilePositionY += this.SCROLL_SPEED;
 
