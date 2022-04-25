@@ -30,7 +30,7 @@ class Play extends Phaser.Scene{
         platforms.body.allowGravity = false;
         // play background music
         let song = this.sound.add('bg_music', {loop: true}); 
-        //song.play(); //plays song
+        song.play(); //plays song
         
         let textConfig = {
             fontFamily: 'Courier',
