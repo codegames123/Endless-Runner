@@ -2,6 +2,7 @@ var addScore;
 var platforms1
 var platforms2
 var rock;
+var spawnRock1;
 class Play extends Phaser.Scene{
     constructor() {
         super("playScene");
@@ -38,12 +39,12 @@ class Play extends Phaser.Scene{
         // play background music
 
         let song = this.sound.add('baby_song', {loop: true}); 
-        //song.play(); //plays song
+        song.play(); //plays song
         let gameOverSound = this.sound.add('game_overSound', {loop: false});
         //rock = new Rock(this, game.config.width + (game.config.height / 15) * 6, (game.config.height/15) * 4, 'rock', 0).setOrigin(0, 0);
-        rock = this.physics.add.sprite(700,220,'rock');
-        
-        rock.body.velocity.x = -1500;
+        // rock = this.physics.add.sprite(game.config.width/2 + 600,game.config.height/2 - 170,'rock');
+        // rock.body.velocity.x = -1900;
+
 
         // rock = this.physics.add.group({
         //     key: 'rock',
@@ -52,6 +53,8 @@ class Play extends Phaser.Scene{
         //     //setXY: { x: game.config.width/2, y: game.config.height/2},
         //     setXY: { x: 12, y: 0, stepX: 70 }
         // });
+
+        
 
         let textConfig = {
             fontFamily: 'Courier',
@@ -83,14 +86,6 @@ class Play extends Phaser.Scene{
         this.pointText = this.add.text(game.config.width/2 + 200,game.config.height/2 - 270, 'Points: ', textConfig);
         this.scoreLeft = this.add.text(game.config.width/2 + 350,game.config.height/2 - 270,  this.pScore, textConfig);
         
-        // make ground tiles group
-        //platforms = this.add.group();
-        // for(let i = 0; i < game.config.width; i += tileSize) {
-        //     let groundTile = this.physics.add.sprite(i, game.config.height - 50, 'ground').setScale(SCALE).setOrigin(0);
-        //     groundTile.body.immovable = true;
-        //     groundTile.body.allowGravity = false;
-        //     platforms.add(groundTile);
-        // }
         // put another tile sprite above the ground tiles
        // this.groundScroll = this.add.tileSprite(0, game.config.height-tileSize, game.config.width, tileSize, 'ground').setSize(24, 20).setOffset(8, 12).setOrigin(0);
         this.baby = this.physics.add.sprite(game.config.width/9 + 20, game.config.height/2+100, 'baby').setScale(SCALE);
@@ -104,19 +99,32 @@ class Play extends Phaser.Scene{
         // add physics collider
         this.physics.add.collider(this.player, platforms1);
         this.physics.add.collider(this.baby, platforms2);
+
         //Game over flag
         this.gameOver = false;
+        
+        // spawns rock every 2 seconds and if collides with player displays Game Over and ends game song
+        this.time.addEvent({
+            delay: 2000, callback: () => {
+                if (!this.gameOver) {
+                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 - 170, 'rock');
+                    rock.body.velocity.x = -1900;
+                }
+                this.physics.add.overlap(this.player, rock, () => {
+                    gameOverSound.play();
+                    this.gameOver = true;
+                    this.add.text(game.config.width / 2, game.config.height / 2, 'Game Over!',).setOrigin(0.5);
+                    song.stop(); //stop music when game over
+                }, null, this);
+            }, callbackScope: this, loop: true
+        });
 
-        //if rock collides with player displays Game Over and ends game song
-        // this.physics.add.overlap(this.player, rock, () => {
-        //     gameOverSound.play();
-        //     this.gameOver = true;
-        //     this.add.text(game.config.width/2, game.config.height/2, 'Game Over!', ).setOrigin(0.5);
-        //     song.stop(); //stop music when game over
-        // }, null, this);
+        
+        
         
         //if game over, stops points from adding
         addScore = this.time.addEvent({ delay: 1000, callback: this.addToScore, callbackScope: this, loop: true }); //calls addToScore every second
+        
     }
 
     addToScore() {
@@ -127,14 +135,6 @@ class Play extends Phaser.Scene{
     randomTimer() { // for future collision spawn rate
         return Math.floor(Math.random() * 5000) + 1000;
     }
-
-    // collectStar(player, rock) {
-    //     rock.destroy;
-    //     this.gameOver = true;
-    //     this.add.text(game.config.width / 2, game.config.height / 2, 'Game Over!').setOrigin(0.5);
-    //     //scoreConfig.fontSize = 28;
-    //     song.stop(); //stop music when game over
-    // }
 
     update() {
         // update tile sprites (tweak for more "speed")
