@@ -18,7 +18,7 @@ class Play extends Phaser.Scene{
         this.load.image('ground','ground.png');
         
     }
-    create() {
+    create() { 
         // variables and settings
         this.JUMP_VELOCITY = -700;
         this.MAX_JUMPS = 2;
@@ -102,7 +102,7 @@ class Play extends Phaser.Scene{
         this.gameOver = false;
         
         // spawns rock every 2 seconds and if collides with player displays Game Over and ends game song
-        this.time.addEvent({delay: 2000, callback: () => {
+        this.time.addEvent({delay: this.randomTimer(), callback: () => {
                 let ranNumber = Math.floor(Math.random() * 2);// uses random number from 0-1 to spawn which rock
                 if (!this.gameOver && ranNumber == 0) {
                     rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 - 170, 'rock'); // top rock
@@ -118,6 +118,7 @@ class Play extends Phaser.Scene{
                 }
                 this.physics.add.overlap(this.player, rock, () => {
                     gameOverSound.play();
+                    rock.destroy();
                     this.gameOver = true;
                     this.add.text(game.config.width / 2, game.config.height / 2, 'Game Over!',).setOrigin(0.5);
                     song.stop(); //stop music when game over
@@ -135,7 +136,13 @@ class Play extends Phaser.Scene{
     }
 
     randomTimer() { // for future collision spawn rate
-        return Math.floor(Math.random() * 5000) + 1000;
+        //return Math.floor(Math.random() * 5000) + 1000;
+        let num = Math.floor(Math.random() * 2);
+        if(num == 0) {
+            return 2000; // 2 seconds
+        }else {
+            return 3000; // 3 seconds
+        }
     }
 
     update() {
