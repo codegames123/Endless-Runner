@@ -44,6 +44,10 @@ class Play extends Phaser.Scene{
         
         let gameOverSound = this.sound.add('game_overSound', {loop: false});//initializes game over sound
 
+        //initilizes keys
+        keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+        keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+
         //rock = new Rock(this, game.config.width + (game.config.height / 15) * 6, (game.config.height/15) * 4, 'rock', 0).setOrigin(0, 0);
         // rock = this.physics.add.sprite(game.config.width/2 + 600,game.config.height/2 - 170,'rock');
         // rock.body.velocity.x = -1900;
@@ -96,6 +100,7 @@ class Play extends Phaser.Scene{
         
         this.player.setCollideWorldBounds(true);
         this.baby.setCollideWorldBounds(true);
+
         // set up Phaser-provided cursor key input
         cursors = this.input.keyboard.createCursorKeys();
         
@@ -107,7 +112,8 @@ class Play extends Phaser.Scene{
         this.gameOver = false;
         
         // spawns rock every 2 seconds and if collides with player displays Game Over and ends game song
-        this.time.addEvent({delay: this.randomTimer(), callback: () => {
+        this.time.addEvent({
+            delay: this.randomTimer(), callback: () => {
                 let ranNumber = Math.floor(Math.random() * 2);// uses random number from 0-1 to spawn which rock
                 if (!this.gameOver && ranNumber == 0) {
                     rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 - 170, 'rock'); // top rock
@@ -115,7 +121,7 @@ class Play extends Phaser.Scene{
                     rock.body.velocity.x = -800;
                     rock.body.velocity.y = -100;
                 }
-                if(!this.gameOver && ranNumber == 1) {
+                if (!this.gameOver && ranNumber == 1) {
                     rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 + 190, 'rock');// bottom
                     rock.body.gravity.y = -2000;
                     rock.body.velocity.x = -800;
@@ -123,15 +129,35 @@ class Play extends Phaser.Scene{
                 }
                 this.physics.add.overlap(this.player, rock, () => {
                     gameOverSound.play(); // plays gameover sound
+
                     rock.destroy();
                     this.gameOver = true;
-                    this.add.text(game.config.width / 2, game.config.height / 2, 'Game Over!',).setOrigin(0.5);
+                    this.add.text(game.config.width / 2, game.config.height / 2, 'Game Over!', { fontSize: 50, color: 'orange' }).setOrigin(0.5);
+                    const clickRestart = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 40, 'Restart?', {fontSize: 30, color: '#52F0F7' }).setInteractive()
+                        .on('pointerdown', () =>
+                            this.scene.restart())
+                        .on('pointerover', () => {
+                            clickRestart.setStyle({ fill: 'yellow' });
+                        })
+                        .on('pointerout', () => {
+                            clickRestart.setStyle({ fill: '#52F0F7' })
+                        });
+                        const clickMenu = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 90, 'Menu', { fontSize: 30, color: '#52F0F7' }).setInteractive()
+                        .on('pointerdown', () =>
+                            this.scene.start('menuScene'))
+                        .on('pointerover', () => {
+                            clickMenu.setStyle({ fill: 'green' });
+                        })
+                        .on('pointerout', () => {
+                            clickMenu.setStyle({ fill: '#52F0F7' })
+                        });
                     song.stop(); //stop music when game over
                 }, null, this);
-            }, callbackScope: this, loop: true});
+            }, callbackScope: this, loop: true
+        });
 
         addScore = this.time.addEvent({ delay: 1000, callback: this.addToScore, callbackScope: this, loop: true }); //calls addToScore every second
-        
+
     }
 
     addToScore() {
@@ -150,6 +176,14 @@ class Play extends Phaser.Scene{
     }
 
     update() {
+
+        // if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) { // if R is pressed, restarts game
+        //     this.scene.restart();
+        // }
+        // if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyM)) { // if M is pressed, goes back to menu
+        //     this.scene.start("menuScene");
+        // }
+
         // makes background scroll diagonally (tweak for more "speed")
         if (!this.gameOver) {
             this.background.tilePositionX += this.SCROLL_SPEED;
