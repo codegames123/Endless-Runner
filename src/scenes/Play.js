@@ -2,7 +2,6 @@ var addScore;
 var platforms1
 var platforms2
 var rock;
-var spawnRock1;
 class Play extends Phaser.Scene{
     constructor() {
         super("playScene");
@@ -11,11 +10,12 @@ class Play extends Phaser.Scene{
     preload(){
         this.load.path = 'assets/';
         //this.load.atlas('sprite', 'rocket1.png', 'kenny_sheet.json'); //atlas temporary example test. will change everything later
-        this.load.spritesheet('player', 'baby_car_2.png',{ frameWidth: 200, frameHeight: 200, startFrame: 0, endFrame: 7 }); // stroller
-        this.load.spritesheet('baby', 'baby_3.png',{ frameWidth: 200, frameHeight: 150, startFrame: 0, endFrame: 7 }); // baby
-        this.load.image('rock', 'rock.png');
+        this.load.spritesheet('player', 'baby_car_3.png',{ frameWidth: 350, frameHeight: 345, startFrame: 0, endFrame: 7 }); // stroller
+        this.load.spritesheet('baby', 'baby_4.png',{ frameWidth: 280, frameHeight: 320, startFrame: 0, endFrame: 7 }); // baby
+        this.load.image('redApple', 'red_apple_core.png');
+        this.load.image('greenApple', 'apple_core_2.png');
         this.load.image('background', 'background.jpg');
-        this.load.image('ground','ground.png');
+        this.load.image('ground','ground3.png');
         
     }
     create() { 
@@ -95,8 +95,8 @@ class Play extends Phaser.Scene{
         // put another tile sprite above the ground tiles
        // this.groundScroll = this.add.tileSprite(0, game.config.height-tileSize, game.config.width, tileSize, 'ground').setSize(24, 20).setOffset(8, 12).setOrigin(0);
 
-        this.baby = this.physics.add.sprite(game.config.width/9 + 20, game.config.height/2+100, 'baby').setScale(SCALE);
-        this.player = this.physics.add.sprite(game.config.width/9, game.config.height/2+100, 'player').setScale(SCALE);
+        this.baby = this.physics.add.sprite(game.config.width/9 + 15, game.config.height/2-30, 'baby').setScale(SCALE);
+        this.player = this.physics.add.sprite(game.config.width/9, game.config.height/2-30, 'player').setScale(SCALE);
         
         this.player.setCollideWorldBounds(true);
         this.baby.setCollideWorldBounds(true);
@@ -116,18 +116,18 @@ class Play extends Phaser.Scene{
             delay: this.randomTimer(), callback: () => {
                 let ranNumber = Math.floor(Math.random() * 2);// uses random number from 0-1 to spawn which rock
                 if (!this.gameOver && ranNumber == 0) {
-                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 - 170, 'rock'); // top rock
+                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 - 170, 'redApple'); // top rock
                     rock.body.gravity.y = -2000;
                     rock.body.velocity.x = -800;
                     rock.body.velocity.y = -100;
                 }
                 if (!this.gameOver && ranNumber == 1) {
-                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 + 190, 'rock');// bottom
+                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 + 190, 'greenApple');// bottom
                     rock.body.gravity.y = -2000;
                     rock.body.velocity.x = -800;
                     rock.body.velocity.y = -500;
                 }
-                this.physics.add.overlap(this.player, rock, () => {
+                this.physics.add.overlap(this.baby, rock, () => {
                     gameOverSound.play(); // plays gameover sound
 
                     rock.destroy();
@@ -167,11 +167,11 @@ class Play extends Phaser.Scene{
 
     randomTimer() { // for future collision spawn rate
         //return Math.floor(Math.random() * 5000) + 1000;
-        let num = Math.floor(Math.random() * 2);
+        let num = Math.floor(Math.random() * 3);
         if(num == 0) {
-            return 2000; // 2 seconds
+            return 1000; // 0.5 seconds
         }else {
-            return 3000; // 3 seconds
+            return 2000; // 2 seconds
         }
     }
 
@@ -197,19 +197,22 @@ class Play extends Phaser.Scene{
         // }
 
 		// check if player is grounded
-	    this.player.isGrounded = this.player.body.touching.down;
+	    this.baby.isGrounded = this.baby.body.touching.down;
 	    // if so, we have jumps to spare
-	    if(!this.gameOver && this.player.isGrounded ) {
+	    if(!this.gameOver && this.baby.isGrounded ) {
             //this.player.anims.play('walk', true);
 	    	this.jumps = this.MAX_JUMPS;
 	    	this.jumping = false;
 	    }
         // allow steady velocity change up to a certain key down duration
-	    if(!this.gameOver && this.jumps > 0 && Phaser.Input.Keyboard.DownDuration(cursors.space, 150)) {
+	    if(!this.gameOver && this.jumps > 1 && Phaser.Input.Keyboard.DownDuration(cursors.space, 150)) {
 	        this.player.body.velocity.y = this.JUMP_VELOCITY;
-            this.baby.body.velocity.y = this.JUMP_VELOCITY;
 	        this.jumping = true;
 	    } 
+        if(!this.gameOver && this.jumps > 0 && Phaser.Input.Keyboard.DownDuration(cursors.space, 150)) {
+            this.baby.body.velocity.y = this.JUMP_VELOCITY;
+	        this.jumping=true;
+        }
         // finally, letting go of the UP key subtracts a jump
 	    if(!this.gameOver && this.jumping && Phaser.Input.Keyboard.UpDuration(cursors.space) ) {
 	    	this.jumps--;

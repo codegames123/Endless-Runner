@@ -3,7 +3,7 @@ class Menu extends Phaser.Scene {
         super("menuScene");
     }
     preload() {
-        this.load.audio('baby_song', './assets/Baby_song 2.1.wav');
+        this.load.audio('baby_song', './assets/Baby_song 2.2.wav');
         this.load.audio('game_overSound', './assets/game_over.wav');
         this.load.image('menuBackground', './assets/menuBackground1.png');//temporary background
 
