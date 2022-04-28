@@ -2,6 +2,7 @@ var addScore;
 var platforms1
 var platforms2
 var rock;
+var highScore = 0;
 class Play extends Phaser.Scene{
     constructor() {
         super("playScene");
@@ -51,7 +52,7 @@ class Play extends Phaser.Scene{
             frames: this.anims.generateFrameNames('greenAppleSpriteS', {      
                 prefix: 'applespin',
                 start: 1,
-                end: 4,
+                end: 5,
                 suffix: '',
                 zeroPad: 4 
             }), 
@@ -106,6 +107,8 @@ class Play extends Phaser.Scene{
         this.pScore = 0;
         this.pointText = this.add.text(game.config.width/2 + 200,game.config.height/2 - 270, 'Points: ', textConfig);
         this.scoreLeft = this.add.text(game.config.width/2 + 350,game.config.height/2 - 270,  this.pScore, textConfig);
+        this.highScoreMid = this.add.text(game.config.width/2 -270,game.config.height/2 - 270, highScore, textConfig);
+        this.add.text(game.config.width/2 -470,game.config.height/2 - 270, 'High score:', textConfig);
         
         // put another tile sprite above the ground tiles
        // this.groundScroll = this.add.tileSprite(0, game.config.height-tileSize, game.config.width, tileSize, 'ground').setSize(24, 20).setOffset(8, 12).setOrigin(0);
@@ -181,6 +184,8 @@ class Play extends Phaser.Scene{
     addToScore() {
         if(!this.gameOver) //if game over, stops points from adding
             this.pScore += 10;
+        if(this.pScore > highScore)
+            highScore += 10;
     }
 
     randomTimer() { // for future collision spawn rate
@@ -236,7 +241,7 @@ class Play extends Phaser.Scene{
 	    }
         if(!this.gameOver && Phaser.Input.Keyboard.JustDown(cursors.space) && this.jumping)
                 this.sound.play('jumpSound');
-
         this.scoreLeft.text = this.pScore; //displays updates score +10
+        this.highScoreMid.text = highScore; // displays updated high score
     }
 }
