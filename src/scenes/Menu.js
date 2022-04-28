@@ -28,7 +28,7 @@ class Menu extends Phaser.Scene {
         this.add.text(game.config.width / 2, game.config.height / 2 - 235, 'Title', menuTextConfig).setOrigin(0.5);
         menuTextConfig.fontFamily = 'Tahoma';
         menuTextConfig.fontSize = 19;
-        this.add.text(game.config.width / 2 - 290, game.config.height - 10, 'Controls: SPACEBAR to Jump', menuTextConfig).setOrigin(0.5);
+        this.add.text(game.config.width / 2 - 260, game.config.height - 10, 'Controls: 2x SPACEBAR to Jump or Double Jump', menuTextConfig).setOrigin(0.5);
         const clickPlay = this.add.text(game.config.width / 2 - 50, game.config.height / 2, 'Play', { backgroundColor: 'aqua', fontFamily: 'Tahoma', fontSize: 60, color: 'purple' }).setInteractive()
             .on('pointerdown', () =>  {
                 selectSound.play();
