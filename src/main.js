@@ -9,8 +9,8 @@ const tileSize = 35;
 // main game object
 let config = {
     type: Phaser.AUTO,
-    width: 900,//840
-    height: 700,//525
+    width: 960,//840
+    height: 540,//525
     autoCenter: true,
     physics: {
         default: 'arcade',

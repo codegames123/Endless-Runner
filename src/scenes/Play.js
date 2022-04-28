@@ -11,7 +11,7 @@ class Play extends Phaser.Scene{
         this.load.path = 'assets/';
         //this.load.atlas('sprite', 'rocket1.png', 'kenny_sheet.json'); //atlas temporary example test. will change everything later
         this.load.spritesheet('player', 'baby_car_3.png',{ frameWidth: 350, frameHeight: 345, startFrame: 0, endFrame: 7 }); // stroller
-        this.load.spritesheet('baby', 'baby_4.png',{ frameWidth: 280, frameHeight: 320, startFrame: 0, endFrame: 7 }); // baby
+        this.load.spritesheet('baby', 'baby_4.png',{ frameWidth: 295, frameHeight: 300, startFrame: 0, endFrame: 7 }); // baby
         this.load.image('redApple', 'red_apple_core.png');
         this.load.image('greenApple', 'apple_core_2.png');
         this.load.image('background', 'background.jpg');
@@ -41,8 +41,9 @@ class Play extends Phaser.Scene{
         let song = this.sound.add('baby_song', {loop: true}); // initilizes background music
         song.play(); //plays song
 
-        
-        let gameOverSound = this.sound.add('game_overSound', {loop: false});//initializes game over sound
+        let selectSound = this.sound.add('selectSound', {loop: false}); // initilizes select sound
+        let gameOverSound = this.sound.add('game_overSound', {loop: false, volume: 0.1});//initializes game over sound
+        let jumpSound = this.sound.add('jumpSound', {loop: false}); // initializes jump sound
 
         //initilizes keys
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
@@ -95,8 +96,8 @@ class Play extends Phaser.Scene{
         // put another tile sprite above the ground tiles
        // this.groundScroll = this.add.tileSprite(0, game.config.height-tileSize, game.config.width, tileSize, 'ground').setSize(24, 20).setOffset(8, 12).setOrigin(0);
 
-        this.baby = this.physics.add.sprite(game.config.width/9 + 15, game.config.height/2-30, 'baby').setScale(SCALE);
-        this.player = this.physics.add.sprite(game.config.width/9, game.config.height/2-30, 'player').setScale(SCALE);
+        this.baby = this.physics.add.sprite(game.config.width/9 + 15, game.config.height/2-30, 'baby').setScale(0.38).setSize(220, 255).setOffset(30, 50);
+        this.player = this.physics.add.sprite(game.config.width/9, game.config.height/2-30, 'player').setScale(0.38);
         
         this.player.setCollideWorldBounds(true);
         this.baby.setCollideWorldBounds(true);
@@ -111,31 +112,32 @@ class Play extends Phaser.Scene{
         //Game over flag
         this.gameOver = false;
         
-        // spawns rock every 2 seconds and if collides with player displays Game Over and ends game song
+        // spawns projectile every 1.5-2 seconds and if collides with player displays Game Over and ends game song
         this.time.addEvent({
             delay: this.randomTimer(), callback: () => {
                 let ranNumber = Math.floor(Math.random() * 2);// uses random number from 0-1 to spawn which rock
                 if (!this.gameOver && ranNumber == 0) {
-                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 - 170, 'redApple'); // top rock
+                    rock = this.physics.add.sprite(game.config.width / 2 + 270, game.config.height / 2 + 300, 'redApple').setScale(0.8); // top rock
+                    //rock.body.gravity.x = -1000;
                     rock.body.gravity.y = -2000;
-                    rock.body.velocity.x = -800;
-                    rock.body.velocity.y = -100;
+                    rock.body.velocity.x = -380;
+                    rock.body.velocity.y = -630;
                 }
                 if (!this.gameOver && ranNumber == 1) {
-                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 + 190, 'greenApple');// bottom
-                    rock.body.gravity.y = -2000;
-                    rock.body.velocity.x = -800;
-                    rock.body.velocity.y = -500;
+                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 + (Math.floor(Math.random() * (250 -(-250) + 1)) - 250), 'greenApple').setScale(0.8);// bottom // 550 // from -250 to 250
+                    //console.log((Math.floor(Math.random() * (250 -(-250) + 1)) - 250)); //(Math.floor(Math.random() * (250 -(-250) + 1)) - 250)
+                    rock.body.gravity.x = -350;//-470 -300
+                    rock.body.gravity.y = -2600;
                 }
                 this.physics.add.overlap(this.baby, rock, () => {
                     gameOverSound.play(); // plays gameover sound
-
                     rock.destroy();
                     this.gameOver = true;
                     this.add.text(game.config.width / 2, game.config.height / 2, 'Game Over!', { fontSize: 50, color: 'orange' }).setOrigin(0.5);
                     const clickRestart = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 40, 'Restart?', {fontSize: 30, color: '#52F0F7' }).setInteractive()
-                        .on('pointerdown', () =>
-                            this.scene.restart())
+                        .on('pointerdown', () => {
+                            selectSound.play();
+                            this.scene.restart();})
                         .on('pointerover', () => {
                             clickRestart.setStyle({ fill: 'yellow' });
                         })
@@ -143,8 +145,9 @@ class Play extends Phaser.Scene{
                             clickRestart.setStyle({ fill: '#52F0F7' })
                         });
                         const clickMenu = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 90, 'Menu', { fontSize: 30, color: '#52F0F7' }).setInteractive()
-                        .on('pointerdown', () =>
-                            this.scene.start('menuScene'))
+                        .on('pointerdown', () => {
+                            selectSound.play();
+                            this.scene.start('menuScene');})
                         .on('pointerover', () => {
                             clickMenu.setStyle({ fill: 'green' });
                         })
@@ -169,7 +172,7 @@ class Play extends Phaser.Scene{
         //return Math.floor(Math.random() * 5000) + 1000;
         let num = Math.floor(Math.random() * 3);
         if(num == 0) {
-            return 1000; // 0.5 seconds
+            return 1500; // 0.5 seconds
         }else {
             return 2000; // 2 seconds
         }
@@ -187,7 +190,7 @@ class Play extends Phaser.Scene{
         // makes background scroll diagonally (tweak for more "speed")
         if (!this.gameOver) {
             this.background.tilePositionX += this.SCROLL_SPEED;
-            this.background.tilePositionY += 2;
+            //this.background.tilePositionY += 2;
         }
         //this.groundScroll.tilePositionX += this.SCROLL_SPEED;
         //this.groundScroll.tilePositionY += this.SCROLL_SPEED;
@@ -205,19 +208,20 @@ class Play extends Phaser.Scene{
 	    	this.jumping = false;
 	    }
         // allow steady velocity change up to a certain key down duration
-	    if(!this.gameOver && this.jumps > 1 && Phaser.Input.Keyboard.DownDuration(cursors.space, 150)) {
-	        this.player.body.velocity.y = this.JUMP_VELOCITY;
+	    if(!this.gameOver && this.jumps > 0 && Phaser.Input.Keyboard.DownDuration(cursors.space, 150)) {
+            this.baby.body.velocity.y = this.JUMP_VELOCITY;
+            if(this.jumps> 1)
+                this.player.body.velocity.y = this.JUMP_VELOCITY;
 	        this.jumping = true;
 	    } 
-        if(!this.gameOver && this.jumps > 0 && Phaser.Input.Keyboard.DownDuration(cursors.space, 150)) {
-            this.baby.body.velocity.y = this.JUMP_VELOCITY;
-	        this.jumping=true;
-        }
         // finally, letting go of the UP key subtracts a jump
 	    if(!this.gameOver && this.jumping && Phaser.Input.Keyboard.UpDuration(cursors.space) ) {
 	    	this.jumps--;
 	    	this.jumping = false;
 	    }
+        if(!this.gameOver && Phaser.Input.Keyboard.JustDown(cursors.space) && this.jumping)
+                this.sound.play('jumpSound');
+
         this.scoreLeft.text = this.pScore; //displays updates score +10
     }
 }
