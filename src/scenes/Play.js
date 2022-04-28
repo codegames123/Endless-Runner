@@ -13,6 +13,7 @@ class Play extends Phaser.Scene{
         this.load.spritesheet('player', 'baby_car_3.png',{ frameWidth: 350, frameHeight: 345, startFrame: 0, endFrame: 7 }); // stroller
         this.load.spritesheet('baby', 'baby_4.png',{ frameWidth: 295, frameHeight: 300, startFrame: 0, endFrame: 7 }); // baby
         this.load.image('redApple', 'red_apple_core.png');
+        this.load.atlas('greenAppleSpriteS', 'greenAppleSprite.png', 'greenAppleSprite.json');
         this.load.image('greenApple', 'apple_core_2.png');
         this.load.image('background', 'background.jpg');
         this.load.image('ground','ground3.png');
@@ -44,6 +45,19 @@ class Play extends Phaser.Scene{
         let selectSound = this.sound.add('selectSound', {loop: false}); // initilizes select sound
         let gameOverSound = this.sound.add('game_overSound', {loop: false, volume: 0.1});//initializes game over sound
         let jumpSound = this.sound.add('jumpSound', {loop: false}); // initializes jump sound
+
+        this.anims.create({ 
+            key: 'applespin', 
+            frames: this.anims.generateFrameNames('greenAppleSpriteS', {      
+                prefix: 'applespin',
+                start: 1,
+                end: 4,
+                suffix: '',
+                zeroPad: 4 
+            }), 
+            //frameRate: 30,
+            repeat: -1 
+        });
 
         //initilizes keys
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
@@ -124,8 +138,9 @@ class Play extends Phaser.Scene{
                     rock.body.velocity.y = -630;
                 }
                 if (!this.gameOver && ranNumber == 1) {
-                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 + (Math.floor(Math.random() * (250 -(-250) + 1)) - 250), 'greenApple').setScale(0.8);// bottom // 550 // from -250 to 250
+                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 + (Math.floor(Math.random() * (250 -(-250) + 1)) - 250), 'greenAppleSpriteS').setScale(0.8);// bottom // 550 // from -250 to 250
                     //console.log((Math.floor(Math.random() * (250 -(-250) + 1)) - 250)); //(Math.floor(Math.random() * (250 -(-250) + 1)) - 250)
+                    rock.play('applespin');
                     rock.body.gravity.x = -350;//-470 -300
                     rock.body.gravity.y = -2600;
                 }
