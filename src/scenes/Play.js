@@ -55,7 +55,7 @@ class Play extends Phaser.Scene{
                 suffix: '',
                 zeroPad: 4 
             }), 
-            //frameRate: 30,
+            frameRate: 5,
             repeat: -1 
         });
 
