@@ -11,8 +11,10 @@ class Play extends Phaser.Scene{
     preload(){
         this.load.path = 'assets/';
         //this.load.atlas('sprite', 'rocket1.png', 'kenny_sheet.json'); //atlas temporary example test. will change everything later
-        this.load.spritesheet('player', 'baby_car_3.png',{ frameWidth: 350, frameHeight: 345, startFrame: 0, endFrame: 7 }); // stroller
-        this.load.spritesheet('baby', 'baby_4.png',{ frameWidth: 295, frameHeight: 300, startFrame: 0, endFrame: 7 }); // baby
+        //this.load.spritesheet('player', 'baby_car_3.png',{ frameWidth: 350, frameHeight: 345, startFrame: 0, endFrame: 7 }); // stroller
+        //this.load.spritesheet('baby', 'baby_4.png',{ frameWidth: 295, frameHeight: 300, startFrame: 0, endFrame: 7 }); // baby
+        this.load.atlas('player', 'baby_car_spritesheet.png', 'baby_car_sprite.json'); // stroller
+        this.load.atlas('baby', 'da_baby.png', 'da_baby_spritesheet.json'); // baby
         this.load.image('redApple', 'red_apple_core.png');
         this.load.image('redApple2', 'red_apple_core_3.png');
         this.load.atlas('greenAppleSpriteS', 'greenAppleSprite.png', 'greenAppleSprite.json');
@@ -52,6 +54,31 @@ class Play extends Phaser.Scene{
         let gameOverSound = this.sound.add('game_overSound', {loop: false, volume: 0.1});//initializes game over sound
         let jumpSound = this.sound.add('jumpSound', {loop: false}); // initializes jump sound
 
+        //creates animations
+        this.anims.create({ 
+            key: 'babyAnim', 
+            frames: this.anims.generateFrameNames('baby', {      
+                prefix: 'baby',
+                start: 1,
+                end: 2,
+                suffix: '',
+                zeroPad: 4 
+            }), 
+            frameRate: 5,
+            repeat: -1 
+        });
+        this.anims.create({ 
+            key: 'babycar', 
+            frames: this.anims.generateFrameNames('player', {      
+                prefix: 'babycar',
+                start: 1,
+                end: 4,
+                suffix: '',
+                zeroPad: 4 
+            }), 
+            frameRate: 5,
+            repeat: -1 
+        });
         this.anims.create({ 
             key: 'applespin', 
             frames: this.anims.generateFrameNames('greenAppleSpriteS', {      
@@ -157,6 +184,8 @@ class Play extends Phaser.Scene{
 
         this.baby = this.physics.add.sprite(game.config.width/9 + 15, game.config.height/2-30, 'baby').setScale(0.38).setSize(220, 255).setOffset(30, 50);
         this.player = this.physics.add.sprite(game.config.width/9, game.config.height/2-30, 'player').setScale(0.38);
+        this.player.play('babycar');
+        this.baby.play('babyAnim');
         
         this.player.setCollideWorldBounds(true);
         this.baby.setCollideWorldBounds(true);
@@ -174,7 +203,7 @@ class Play extends Phaser.Scene{
         // spawns projectile every 1.5-2 seconds and if collides with player displays Game Over and ends game song
         this.time.addEvent({
             delay: this.randomTimer(), callback: () => {
-                let ranNumber = Math.floor(Math.random() * 4);// uses random number from 0-3 to spawn projectiles
+                let ranNumber = 3//3;Math.floor(Math.random() * 4);// uses random number from 0-3 to spawn projectiles
                 if (!this.gameOver && ranNumber == 0) {
                     let randomSpawn = Math.floor(Math.random() * 2);
                     if(randomSpawn == 0) {
@@ -211,18 +240,26 @@ class Play extends Phaser.Scene{
                     rock.body.velocity.y = -730;
                 }
                 if (!this.gameOver && ranNumber == 3) { // projectile from the right side
-                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 + 100, 'greenAppleSpriteS').setScale(0.8);// bottom // 550 // from -250 to 250
+                    rock = this.physics.add.sprite(game.config.width / 2 + 600 , game.config.height / 2 + 100, 'greenAppleSpriteS').setScale(0.8);// bottom // 550 // from -250 to 250
                     rock.play('applespin');
-                    let rock2 = this.physics.add.sprite(game.config.width / 2 + 700, game.config.height / 2 + 100, 'greenAppleSpriteS').setScale(0.8);
-                    rock2.play('applespin');
-                    rock.body.gravity.x = -350;//-470 -300
-                    rock.body.gravity.y = -2600;
-                    rock2.body.gravity.x = -350;//-470 -300
-                    rock2.body.gravity.y = -2600;
+                     
+                     var rock2 = this.physics.add.sprite(game.config.width / 2 + 700, game.config.height / 2 + 100, 'greenAppleSpriteS').setScale(0.8);
+                     rock2.play('applespin');
+                     rock.body.gravity.x = -350;//-470 -300
+                     rock.body.gravity.y = -2600;
+                     rock2.body.gravity.x = -350;//-470 -300
+                     rock2.body.gravity.y = -2600;
                 }
+                this.physics.add.overlap(this.baby, rock2, () => {
+                    rock2.destroy();
+                },null,this);
                 this.physics.add.overlap(this.baby, rock, () => { // overlapping function
+                    
                     gameOverSound.play(); // plays gameover sound
+                    //rock.setActive(false).setVisible(false);
                     rock.destroy();
+                    // rock2.setActive(false).setVisible(false);
+                    // rock2.destroy();
                     this.gameOver = true;
                     this.add.text(game.config.width / 2, game.config.height / 2, 'Game Over!', { fontSize: 50, color: 'orange' }).setOrigin(0.5);
                     const clickRestart = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 40, 'Restart?', {fontSize: 30, color: '#52F0F7' }).setInteractive()
@@ -265,9 +302,9 @@ class Play extends Phaser.Scene{
         //return Math.floor(Math.random() * 5000) + 1000;
         let num = Math.floor(Math.random() * 3);
         if(num == 0) {
-            return 1500; // 0.5 seconds
+            return 2000; // 0.5 seconds
         }else {
-            return 2000; // 2 seconds
+            return 2500; // 2 seconds
         }
     }
 
@@ -313,7 +350,7 @@ class Play extends Phaser.Scene{
 	    	this.jumping = false;
 	    }
         if(!this.gameOver && Phaser.Input.Keyboard.JustDown(cursors.space) && this.jumping)
-                this.sound.play('jumpSound');
+                this.sound.play('jumpSound', {volume: 0.3});
 
         this.scoreLeft.text = this.pScore; // updates score +10
         this.highScoreMid.text = highScore; // updates high score
