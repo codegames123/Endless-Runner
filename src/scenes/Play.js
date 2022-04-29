@@ -3,6 +3,7 @@ var platforms1
 var platforms2
 var rock;
 var highScore = 0;
+var rock2;
 class Play extends Phaser.Scene{
     constructor() {
         super("playScene");
@@ -19,6 +20,7 @@ class Play extends Phaser.Scene{
         this.load.image('redApple2', 'red_apple_core_3.png');
         this.load.atlas('greenAppleSpriteS', 'greenAppleSprite.png', 'greenAppleSprite.json');
         //this.load.atlas('redAppleSpriteS', 'red_apple_core_sprite_sheet.png', 'red_apple_core.json');
+        this.load.atlas('babyStun', 'baby_stun.png', 'baby_stun_spritesheet.json');
         this.load.atlas('beerBottleS', 'beer_bottle_spritesheet.png', 'beer_bottle.json');
         this.load.atlas('bottleS', 'bottle_spritesheet.png', 'bottle.json');
         this.load.atlas('bananaS', 'banana_spritesheet.png', 'banana.json');
@@ -77,6 +79,18 @@ class Play extends Phaser.Scene{
                 zeroPad: 4 
             }), 
             frameRate: 5,
+            repeat: -1 
+        });
+        this.anims.create({ 
+            key: 'babystun', 
+            frames: this.anims.generateFrameNames('babyStun', {      
+                prefix: 'babystun',
+                start: 1,
+                end: 2,
+                suffix: '',
+                zeroPad: 4 
+            }), 
+            frameRate: 2,
             repeat: -1 
         });
         this.anims.create({ 
@@ -203,7 +217,7 @@ class Play extends Phaser.Scene{
         // spawns projectile every 1.5-2 seconds and if collides with player displays Game Over and ends game song
         this.time.addEvent({
             delay: this.randomTimer(), callback: () => {
-                let ranNumber = 3//3;Math.floor(Math.random() * 4);// uses random number from 0-3 to spawn projectiles
+                let ranNumber = Math.floor(Math.random() * 4);// uses random number from 0-3 to spawn projectiles
                 if (!this.gameOver && ranNumber == 0) {
                     let randomSpawn = Math.floor(Math.random() * 2);
                     if(randomSpawn == 0) {
@@ -243,20 +257,20 @@ class Play extends Phaser.Scene{
                     rock = this.physics.add.sprite(game.config.width / 2 + 600 , game.config.height / 2 + 100, 'greenAppleSpriteS').setScale(0.8);// bottom // 550 // from -250 to 250
                     rock.play('applespin');
                      
-                     var rock2 = this.physics.add.sprite(game.config.width / 2 + 700, game.config.height / 2 + 100, 'greenAppleSpriteS').setScale(0.8);
+                     rock2 = this.physics.add.sprite(game.config.width / 2 + 700, game.config.height / 2 + 100, 'greenAppleSpriteS').setScale(0.8);
                      rock2.play('applespin');
                      rock.body.gravity.x = -350;//-470 -300
                      rock.body.gravity.y = -2600;
                      rock2.body.gravity.x = -350;//-470 -300
                      rock2.body.gravity.y = -2600;
                 }
-                this.physics.add.overlap(this.baby, rock2, () => {
-                    rock2.destroy();
-                },null,this);
+                
                 this.physics.add.overlap(this.baby, rock, () => { // overlapping function
                     
                     gameOverSound.play(); // plays gameover sound
                     //rock.setActive(false).setVisible(false);
+                    this.baby.stop('babyAnim');
+                    this.baby.play('babystun');
                     rock.destroy();
                     // rock2.setActive(false).setVisible(false);
                     // rock2.destroy();
@@ -283,10 +297,14 @@ class Play extends Phaser.Scene{
                             clickMenu.setStyle({ fill: '#52F0F7' })
                         });
                     song.stop(); //stop music when game over
+                    
+                    this.player.anims.stop();
                 }, null, this);
             }, callbackScope: this, loop: true
         });
-
+        this.physics.add.overlap(this.baby, rock2, () => {
+            rock2.destroy();
+        }, null, this);
         addScore = this.time.addEvent({ delay: 1000, callback: this.addToScore, callbackScope: this, loop: true }); //calls addToScore every second
 
     }
