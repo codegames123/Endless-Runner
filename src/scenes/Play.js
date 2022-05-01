@@ -316,7 +316,7 @@ class Play extends Phaser.Scene{
                     // rock2.destroy();
                     this.gameOver = true;
                     this.add.text(game.config.width / 2, game.config.height / 2, 'Game Over!', { fontSize: 50, color: 'orange' }).setOrigin(0.5);
-                    const clickRestart = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 40, 'Restart?', { fontSize: 30, color: '#52F0F7' }).setInteractive()
+                    const clickRestart = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 40, 'Restart?', { fontFamily: 'Cursive', fontSize: 30, color: '#52F0F7' }).setInteractive()
                         .on('pointerdown', () => {
                             selectSound.play();
                             this.scene.restart();
@@ -327,7 +327,7 @@ class Play extends Phaser.Scene{
                         .on('pointerout', () => {
                             clickRestart.setStyle({ fill: '#52F0F7' })
                         });
-                    const clickMenu = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 90, 'Menu', { fontSize: 30, color: '#52F0F7' }).setInteractive()
+                    const clickMenu = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 90, 'Menu', { fontFamily: 'Cursive',fontSize: 30, color: '#52F0F7' }).setInteractive()
                         .on('pointerdown', () => {
                             selectSound.play();
                             this.scene.start('menuScene');
