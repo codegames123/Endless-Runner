@@ -4,6 +4,7 @@ var platforms2
 var rock;
 var highScore = 0;
 var rock2;
+//var isOutOfBound = true;
 class Play extends Phaser.Scene{
     constructor() {
         super("playScene");
@@ -36,7 +37,7 @@ class Play extends Phaser.Scene{
         this.SCROLL_SPEED = 4;
         currentScene = 3;
         this.physics.world.gravity.y = 2600;
-        
+
         this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'background').setOrigin(0);
 
         platforms1 = this.physics.add.image(game.config.width/2 + 420, game.config.height/2 + 228, 'ground').setScale(2).setSize(40, 20).setOffset(30, 8);
@@ -48,13 +49,16 @@ class Play extends Phaser.Scene{
         platforms2.setImmovable(true);
         platforms2.body.allowGravity = false;
         
-        
         let song = this.sound.add('baby_song', {loop: true}); // initilizes background music
         song.play(); //plays song
 
         let selectSound = this.sound.add('selectSound', {loop: false}); // initilizes select sound
         let gameOverSound = this.sound.add('game_overSound', {loop: false, volume: 0.1});//initializes game over sound
         let jumpSound = this.sound.add('jumpSound', {loop: false}); // initializes jump sound
+        let appleSounds = this.sound.add('appleSound', {loop: false});
+        let canSound = this.sound.add('canSound', {loop: false});
+        let bananaSound = this.sound.add('bananaSound', {loop: false});
+        let throwSound = this.sound.add('throwSound', {loop: false});
 
         //creates animations
         this.anims.create({ 
@@ -149,8 +153,8 @@ class Play extends Phaser.Scene{
         //rock = new Rock(this, game.config.width + (game.config.height / 15) * 6, (game.config.height/15) * 4, 'rock', 0).setOrigin(0, 0);
         // rock = this.physics.add.sprite(game.config.width/2 + 600,game.config.height/2 - 170,'rock');
         // rock.body.velocity.x = -1900;
-
-
+        //var rock = this.physics.add.group();
+        //rock.getBounds();
         // rock = this.physics.add.group({
         //     key: 'rock',
         //     repeat: 11,
@@ -170,19 +174,6 @@ class Play extends Phaser.Scene{
                 bottom: 5,
             },
             fixedWidth: 200
-        }
-
-        let scoreConfig = {
-            fontFamily: 'Trebuchet MS',
-            fontSize: '28px',
-            backgroundColor: 'lightgreen',
-            color: 'black',
-            align: 'right',
-            padding: {
-                top: 5,
-                bottom: 5,
-            },
-            fixedWidth: 100
         }
 
         //initilize score;
@@ -213,83 +204,134 @@ class Play extends Phaser.Scene{
 
         //Game over flag
         this.gameOver = false;
-        
+        this.isSpawn = false;
         // spawns projectile every 1.5-2 seconds and if collides with player displays Game Over and ends game song
         this.time.addEvent({
             delay: this.randomTimer(), callback: () => {
-                let ranNumber = Math.floor(Math.random() * 4);// uses random number from 0-3 to spawn projectiles
+                //let isOutOfBound = false;
+                
+                let randomSpawn = Math.floor(Math.random() * 2);
+                let ranNumber = Math.floor(Math.random() * 4);
+                // uses random number from 0-3 to spawn projectiles
                 if (!this.gameOver && ranNumber == 0) {
-                    let randomSpawn = Math.floor(Math.random() * 2);
-                    if(randomSpawn == 0) {
-                        rock = this.physics.add.sprite(game.config.width / 2 + 270, game.config.height / 2 + 300, 'redApple').setScale(0.8); // red apple from ground
-                    }else if(randomSpawn == 1){
-                        rock = this.physics.add.sprite(game.config.width / 2 + 270, game.config.height / 2 + 300, 'redApple2').setScale(0.8);
+                    throwSound.play();
+                    if (randomSpawn == 0) {
+                        rock = this.physics.add.sprite(game.config.width / 2 + 270, game.config.height / 2 + 280, 'redApple').setScale(0.8); // red apple from ground
+                    } else if (randomSpawn == 1) {
+                        rock = this.physics.add.sprite(game.config.width / 2 + 270, game.config.height / 2 + 280, 'redApple2').setScale(0.8);
                     }
                     //rock.body.gravity.x = -1000;
                     rock.body.gravity.y = -2000;
                     rock.body.velocity.x = -380;
                     rock.body.velocity.y = -630;
+                    this.isSpawn = true;
+                    //isOutOfBound = Phaser.Geom.Rectangle.Overlaps(this.physics.world.bounds, rock.getBounds()); // checks if item is in the screen
+                    //console.log(isOutOfBound);
                 }
                 if (!this.gameOver && ranNumber == 1) { // projectile from the right side
-                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 + (Math.floor(Math.random() * (250 -(-250) + 1)) - 250), 'bottleS').setScale(0.8);// bottom // 550 // from -250 to 250
+                    rock = this.physics.add.sprite(game.config.width / 2 + 505, game.config.height / 2 + (Math.floor(Math.random() * (250 - (-250) + 1)) - 250), 'bottleS').setScale(0.8);// bottom // 550 // from -250 to 250
                     rock.play('bottleSpin');
                     rock.body.gravity.x = -350;//-470 -300
                     rock.body.gravity.y = -2600;
+                    this.isSpawn = true;
                 }
                 if (!this.gameOver && ranNumber == 2) { // projectiles from the ground
-                    let randomSpawn = Math.floor(Math.random() * 3);
-                    if(randomSpawn == 0) {
-                        rock = this.physics.add.sprite(game.config.width / 2 + 450, game.config.height / 2 + 300, 'beerBottleS').setScale(0.8); // spawns beer bottle
+                    //let randomSpawn = Math.floor(Math.random() * 3);
+                    throwSound.play();
+                    if (randomSpawn == 0) {
+                        rock = this.physics.add.sprite(game.config.width / 2 + 450, game.config.height / 2 + 280, 'beerBottleS').setScale(0.8); // spawns beer bottle
                         rock.play('beerbottleSpin');
-                    }else if(randomSpawn == 1){
-                        rock = this.physics.add.sprite(game.config.width / 2 + 450, game.config.height / 2 + 300, 'bananaS').setScale(0.8); // spawns banana instead
+                    } else if (randomSpawn == 1) {
+                        rock = this.physics.add.sprite(game.config.width / 2 + 450, game.config.height / 2 + 280, 'bananaS').setScale(0.8); // spawns banana instead
                         rock.play('bananaSpin');
-                    }else if(randomSpawn == 2){
-                        rock = this.physics.add.sprite(game.config.width / 2 + 450, game.config.height / 2 + 300, 'greenAppleSpriteS').setScale(0.8); // spawns banana instead
+                    } else if (randomSpawn == 2) {
+                        rock = this.physics.add.sprite(game.config.width / 2 + 450, game.config.height / 2 + 280, 'greenAppleSpriteS').setScale(0.8); // spawns banana instead
                         rock.play('applespin');
                     }
                     //rock.body.gravity.x = -1000;
                     rock.body.gravity.y = -2000;
                     rock.body.velocity.x = -380;
                     rock.body.velocity.y = -730;
+                    this.isSpawn = true;
                 }
                 if (!this.gameOver && ranNumber == 3) { // projectile from the right side
-                    rock = this.physics.add.sprite(game.config.width / 2 + 600 , game.config.height / 2 + 100, 'greenAppleSpriteS').setScale(0.8);// bottom // 550 // from -250 to 250
+                    rock = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 + 100, 'greenAppleSpriteS').setScale(0.8);// bottom // 550 // from -250 to 250
                     rock.play('applespin');
-                     
-                     rock2 = this.physics.add.sprite(game.config.width / 2 + 700, game.config.height / 2 + 100, 'greenAppleSpriteS').setScale(0.8);
-                     rock2.play('applespin');
-                     rock.body.gravity.x = -350;//-470 -300
-                     rock.body.gravity.y = -2600;
-                     rock2.body.gravity.x = -350;//-470 -300
-                     rock2.body.gravity.y = -2600;
+
+                    // rock2 = this.physics.add.sprite(game.config.width / 2 + 700, game.config.height / 2 + 100, 'greenAppleSpriteS').setScale(0.8);
+                    // rock2.play('applespin');
+                    rock.body.gravity.x = -350;//-470 -300
+                    rock.body.gravity.y = -2600;
+                    // rock2.body.gravity.x = -350;//-470 -300
+                    // rock2.body.gravity.y = -2600;
+                    this.isSpawn = true;
                 }
-                
-                this.physics.add.overlap(this.baby, rock, () => { // overlapping function
+
+                if (!this.gameOver && ranNumber == 3) { // projectile from the right side
+                    rock = this.physics.add.sprite(game.config.width / 2 + 700, game.config.height / 2 + 100, 'greenAppleSpriteS').setScale(0.8);
+                    rock.play('applespin');
+                    rock.body.gravity.x = -350;//-470 -300
+                    rock.body.gravity.y = -2600;
+                    this.isSpawn = true;
                     
+                }
+                //rock.setCollideWorldBounds(true);
+                //let isOutOfBound = Phaser.Geom.Rectangle.Overlaps(this.physics.world.bounds, rock.getBounds());
+                
+                // if(!this.isSpawn)
+                //      this.time.addEvent({delay: 1000, callback: ()=> {rock.destroy()}, callbackScope: this, loop: true});
+                // //if(!isSpawn) {
+                //    // isOutOfBound = Phaser.Geom.Rectangle.Overlaps(this.physics.world.bounds, rock.getBounds());
+                //     //if(!isOutOfBound)
+                //     //console.log(isNotOutOfBound);
+                //     this.isSpawn = false;
+                // //}
+               
+                this.physics.add.overlap(this.baby, rock, () => { // overlapping function
+                    if (ranNumber == 0) {
+                        appleSounds.play();
+                    }
+                    if (ranNumber == 1) {
+                        canSound.play();
+                    }
+                    if (ranNumber == 2) {
+                        if (randomSpawn == 0) {
+
+                        } else if (randomSpawn == 1) {
+                            bananaSound.play();
+                        } else if (randomSpawn == 2) {
+                            appleSounds.play();
+                        }
+                    }
+                    if (ranNumber == 3) {
+                        appleSounds.play();
+                    }
                     gameOverSound.play(); // plays gameover sound
                     //rock.setActive(false).setVisible(false);
                     this.baby.stop('babyAnim');
                     this.baby.play('babystun');
                     rock.destroy();
+                    //rock2.destroy();
                     // rock2.setActive(false).setVisible(false);
                     // rock2.destroy();
                     this.gameOver = true;
                     this.add.text(game.config.width / 2, game.config.height / 2, 'Game Over!', { fontSize: 50, color: 'orange' }).setOrigin(0.5);
-                    const clickRestart = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 40, 'Restart?', {fontSize: 30, color: '#52F0F7' }).setInteractive()
+                    const clickRestart = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 40, 'Restart?', { fontSize: 30, color: '#52F0F7' }).setInteractive()
                         .on('pointerdown', () => {
                             selectSound.play();
-                            this.scene.restart();})
+                            this.scene.restart();
+                        })
                         .on('pointerover', () => {
                             clickRestart.setStyle({ fill: 'yellow' });
                         })
                         .on('pointerout', () => {
                             clickRestart.setStyle({ fill: '#52F0F7' })
                         });
-                        const clickMenu = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 90, 'Menu', { fontSize: 30, color: '#52F0F7' }).setInteractive()
+                    const clickMenu = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 90, 'Menu', { fontSize: 30, color: '#52F0F7' }).setInteractive()
                         .on('pointerdown', () => {
                             selectSound.play();
-                            this.scene.start('menuScene');})
+                            this.scene.start('menuScene');
+                        })
                         .on('pointerover', () => {
                             clickMenu.setStyle({ fill: 'green' });
                         })
@@ -297,16 +339,14 @@ class Play extends Phaser.Scene{
                             clickMenu.setStyle({ fill: '#52F0F7' })
                         });
                     song.stop(); //stop music when game over
-                    
+
                     this.player.anims.stop();
                 }, null, this);
-            }, callbackScope: this, loop: true
-        });
-        this.physics.add.overlap(this.baby, rock2, () => {
-            rock2.destroy();
-        }, null, this);
-        addScore = this.time.addEvent({ delay: 1000, callback: this.addToScore, callbackScope: this, loop: true }); //calls addToScore every second
 
+            }, callbackScope: this, loop: true
+
+        });
+        addScore = this.time.addEvent({ delay: 1000, callback: this.addToScore, callbackScope: this, loop: true }); //calls addToScore every second
     }
 
     addToScore() {
@@ -320,10 +360,15 @@ class Play extends Phaser.Scene{
         //return Math.floor(Math.random() * 5000) + 1000;
         let num = Math.floor(Math.random() * 3);
         if(num == 0) {
-            return 2000; // 0.5 seconds
+            return 2300; // 0.5 seconds
         }else {
-            return 2500; // 2 seconds
+            return 2800; // 2 seconds
         }
+    }
+
+    bounds(){
+        let bounds = rock.getBounds();
+        console.log(bounds);
     }
 
     update() {
@@ -334,7 +379,11 @@ class Play extends Phaser.Scene{
         // if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyM)) { // if M is pressed, goes back to menu
         //     this.scene.start("menuScene");
         // }
-
+        
+        //let isOutOfBound = Phaser.Geom.Rectangle.Overlaps(this.physics.world.bounds, getBounds());
+        // if(bounds > ) {
+        //     rock.destroy();
+        // }
         // makes background scroll diagonally (tweak for more "speed")
         if (!this.gameOver) {
             this.background.tilePositionX += this.SCROLL_SPEED;
@@ -346,6 +395,8 @@ class Play extends Phaser.Scene{
         // if (!this.gameOver) {
         //     rock.update();
         // }
+
+        
 
 		// check if player is grounded
 	    this.baby.isGrounded = this.baby.body.touching.down;
