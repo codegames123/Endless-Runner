@@ -70,7 +70,8 @@ class Menu extends Phaser.Scene {
         this.add.rectangle(game.config.width / 2 + 350, game.config.height / 2 - 10, 50, 50, 0x6666ff); // red apple rect
         this.add.rectangle(game.config.width / 2 + 300, game.config.height / 2 + 203, 60, 75, 0x6666ff); // stop sign rect
         this.add.rectangle(game.config.width / 2 + 400, game.config.height / 2 + 215,60, 60, 0x6666ff); // box rect
-        this.add.text(game.config.width / 2 - 50 + 250, game.config.height / 2 - 190, 'Avoid all Obstacles', { fontFamily: 'Impact', fontSize: 25, color: 'purple' }).setInteractive()
+        this.add.text(game.config.width / 2 - 50 + 250, game.config.height / 2 - 190, 'Avoid all Obstacles', { fontFamily: 'Impact', fontSize: 25, color: 'purple' });
+        this.add.text(game.config.width / 2 - 50 + 250, game.config.height / 2 - 160, 'Do not let anything hit the baby!', { fontFamily: 'Impact', fontSize: 18, color: 'purple' })
 
         this.add.image(game.config.width / 2 - 310, game.config.height -20, 'spaceBar').setScale(0.4);
         this.add.image(game.config.width / 2 + 250, game.config.height / 2 - 10, 'greenApple').setScale(0.8);
