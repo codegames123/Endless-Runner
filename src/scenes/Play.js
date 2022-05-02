@@ -14,6 +14,9 @@ class Play extends Phaser.Scene{
         this.load.image('greenApple', 'apple_core_2.png');
         this.load.image('background', 'Endless_Runner_Background.png');
         this.load.image('ground','Ground_tile.png');
+        this.load.image('trash','trash_can.png');
+        this.load.image('score','Score-display.png');
+        this.load.image('highS','highS-display.png');
         this.load.atlas('player', 'baby_car_spritesheet.png', 'baby_car_sprite.json'); // stroller
         this.load.atlas('baby', 'da_baby.png', 'da_baby_spritesheet.json'); // baby
         this.load.atlas('greenAppleSpriteS', 'greenAppleSprite.png', 'greenAppleSprite.json');
@@ -56,6 +59,7 @@ class Play extends Phaser.Scene{
         let beerBreak = this.sound.add('beerBreak', {loop: false}); // initilizes beer break sound
         let stopSound = this.sound.add('stopSound', {loop: false}); // initilizes stop sign hit sound
         let crateSound = this.sound.add('crateSound',{loop: false}); // initilizes crate hit sound
+        this.speedUp = this.sound.add('speedUp',{loop: false}); // initilizes crate hit sound
 
         //creates animations
         this.anims.create({ 
@@ -171,27 +175,16 @@ class Play extends Phaser.Scene{
         //     setXY: { x: 12, y: 0, stepX: 70 }
         // });
         
-        //Text formats
-        let textConfig = {
-            fontFamily: 'Courier',
-            fontSize: '29px',
-            color: 'black',
-            align: 'left',
-            padding: {
-                top: 10,
-                bottom: 5,
-            },
-            fixedWidth: 200
-        }
-
         //initilize score;
         this.pScore = 0;
         //this.pointText = this.add.text(game.config.width/2 + 200,game.config.height/2 - 270, 'Points: ', textConfig);
-        this.scoreLeft = this.add.text(game.config.width/2 + 300,game.config.height/2 - 270,  this.pScore, textConfig);
-
+        
         //initilizes and displays high score
-        this.highScoreMid = this.add.text(game.config.width/2 + 320,game.config.height/2 - 220, highScore, {fontFamily: 'Courier',fontSize: '18px',color: 'black',align: 'left'});
-        this.add.text(game.config.width/2 +260,game.config.height/2 - 220, 'Best:', {fontFamily: 'Courier',fontSize: '18px',color: 'black',align: 'left'});
+        this.add.image(game.config.width/2 -400,game.config.height/2 - 225,'highS').setScale(0.7);
+        this.highScoreMid = this.add.text(game.config.width/2 - 415,game.config.height/2 - 220, highScore, {fontFamily: 'Courier',fontSize: '25px',color: 'black',align: 'left'});
+        this.add.image(game.config.width/2 + 400,game.config.height/2 - 225, 'score').setScale(0.7);
+        this.scoreLeft = this.add.text(game.config.width/2 +380,game.config.height/2 - 220,  this.pScore, {fontFamily: 'Courier',fontSize: '25px',color: 'black',align: 'left'});
+        //this.add.text(game.config.width/2 +260,game.config.height/2 - 220, 'Best:', {fontFamily: 'Courier',fontSize: '18px',color: 'black',align: 'left'});
        
         
         // put another tile sprite above the ground tiles
@@ -222,7 +215,7 @@ class Play extends Phaser.Scene{
             delay: this.randomTimer(), callback: () => {
                 // uses random number from 0-6 to spawn projectiles
                 let randomSpawn = Math.floor(Math.random() * 2);
-                let ranNumber = Math.floor(Math.random() * 6);
+                let ranNumber = Math.floor(Math.random() * 7);
 
                 if (!this.gameOver && ranNumber == 0) {
                     throwSound.play();
@@ -243,11 +236,11 @@ class Play extends Phaser.Scene{
                     console.log(this.pScore);
 
                     //goes faster after every score of 500 with max speed after 2000
-                    if (this.pScore > 0 && this.pScore < 500) {
+                    if (this.pScore < 500) {
                         projectile.body.gravity.x += 0;
-                    } else if (this.pScore > 500 && this.pScore < 1000) {
+                    } else if (this.pScore < 1000) {
                         projectile.body.gravity.x += -300;
-                    } else if (this.pScore > 1000 && this.pScore < 1500) {
+                    } else if (this.pScore < 1500) {
                         projectile.body.gravity.x += -600;
                     } else
                         projectile.body.gravity.x += -700;
@@ -283,11 +276,11 @@ class Play extends Phaser.Scene{
                     projectile.body.gravity.x = -450;
 
                     //goes faster after every score of 500 with max speed after 2000
-                    if (this.pScore > 0 && this.pScore < 500) {
+                    if (this.pScore < 500) {
                         projectile.body.gravity.x += 0;
-                    } else if (this.pScore > 500 && this.pScore < 1000) {
+                    } else if (this.pScore < 1000) {
                         projectile.body.gravity.x += -300;
-                    } else if (this.pScore > 1000 && this.pScore < 1500) {
+                    } else if (this.pScore < 1500) {
                         projectile.body.gravity.x += -600;
                     } else
                         projectile.body.gravity.x += -700;
@@ -299,30 +292,33 @@ class Play extends Phaser.Scene{
                     projectile.body.gravity.x = -450;
 
                     //goes faster after every score of 500 with max speed after 2000
-                    if (this.pScore > 0 && this.pScore < 500) {
+                    if (this.pScore < 500) {
                         projectile.body.gravity.x += 0;
-                    } else if (this.pScore > 500 && this.pScore < 1000) {
+                    } else if (this.pScore < 1000) {
                         projectile.body.gravity.x += -300;
-                    } else if (this.pScore > 1000 && this.pScore < 1500) {
+                    } else if (this.pScore < 1500) {
+                        projectile.body.gravity.x += -600;
+                    } else
+                        projectile.body.gravity.x += -700;
+                    projectile.body.gravity.y = -2600;
+                }
+                if (!this.gameOver && ranNumber == 6) { // box projectile
+                    projectile = this.physics.add.sprite(game.config.width / 2 + 900, game.config.height / 2 + 166, 'trash').setScale(0.6).setSize(170, 200).setOffset(50, 50); //setSize(width, height), setOffset(left-/right+,up-/down+)
+                    // - 450 before speed up, -750 after speed up
+                    projectile.body.gravity.x = -450;
+
+                    //goes faster after every score of 500 with max speed after 2000
+                    if (this.pScore < 500) {
+                        projectile.body.gravity.x += 0;
+                    } else if (this.pScore < 1000) {
+                        projectile.body.gravity.x += -300;
+                    } else if (this.pScore < 1500) {
                         projectile.body.gravity.x += -600;
                     } else
                         projectile.body.gravity.x += -700;
                     projectile.body.gravity.y = -2600;
                 }
 
-
-                // if (!this.gameOver && ranNumber == 3) { // projectile from the right side
-                //     projectile = this.physics.add.sprite(game.config.width / 2 + 700, game.config.height / 2 + 100, 'greenAppleSpriteS').setScale(0.8);
-                //     projectile.play('applespin');
-                //     projectile.body.gravity.x = -350;//-470 -300
-                //     projectile.body.gravity.y = -2600;
-                //     this.isSpawn = true;
-                    
-                // }
-                //projectile.setCollideWorldBounds(true);
-                //let isOutOfBound = Phaser.Geom.Rectangle.Overlaps(this.physics.world.bounds, projectile.getBounds());
-                
-               
                 this.physics.add.overlap(this.baby, projectile, () => { // overlapping function
                     //plays a particular collision sound
                     if (ranNumber == 0) {
@@ -394,8 +390,10 @@ class Play extends Phaser.Scene{
     addToScore() {
         if(!this.gameOver) //if game over, stops points from adding
             this.pScore += 1;
-        if(this.pScore % 500 == 0 && this.pScore < 2000) // adds to background speed every score of 500 max 2000
+        if(this.pScore % 500 == 0 && this.pScore < 2000) { // adds to background speed every score of 500 max 2000
+            this.speedUp.play(); //plays sound after every speed up
             this.SCROLL_SPEED += 1.5;
+        }
         if(this.pScore > highScore)
             highScore += 1; // adds to high score
     }

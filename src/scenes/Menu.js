@@ -13,7 +13,8 @@ class Menu extends Phaser.Scene {
         this.load.audio('throwSound', './assets/Throw-sound.wav');
         this.load.audio('beerBreak', './assets/Glass_sound.wav');
         this.load.audio('stopSound', './assets/Stop_sign_sound.wav');
-        this.load.audio('crateSound','./assets/crate_sound.wav')
+        this.load.audio('crateSound','./assets/crate_sound.wav');
+        this.load.audio('speedUp','./assets/speedUp.wav');
         this.load.image('menuBackground', './assets/Menu_art_2.png');//menu background
         this.load.image('playButton', './assets/Button-bg.png');//button
         this.load.image('spaceBar', './assets/spacebar-icon.png');//stop sign

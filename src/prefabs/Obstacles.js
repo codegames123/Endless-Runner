@@ -1,3 +1,4 @@
+//unused but saved for the future
 class Obstacles extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y, texture, frame, speed) {
       super(scene, x, y, texture, frame);
