@@ -39,7 +39,7 @@ class Play extends Phaser.Scene{
         currentScene = 3;
         this.physics.world.gravity.y = 2600;
 
-        this.background = this.add.tileSprite(game.config.width/2, game.config.height/2, game.config.width, game.config.height + 300, 'background');
+        this.background = this.add.tileSprite(game.config.width/2, game.config.height/2, game.config.width, game.config.height + 321, 'background'); // (position-x, position-y, width, height, 'background name')
 
         platforms1 = this.physics.add.image(game.config.width/2 + 420, game.config.height/2 + 228, 'ground').setScale(2).setSize(40, 20).setOffset(30, 8);
         platforms2 = this.physics.add.image(game.config.width/2 + 420, game.config.height/2 + 228, 'ground').setScale(2).setSize(20, 30).setOffset(40, -9); //setSize(width, height), setOffset(left/right,up/down)
