@@ -14,7 +14,7 @@ class Menu extends Phaser.Scene {
         this.load.audio('beerBreak', './assets/Glass_sound.wav');
         this.load.audio('stopSound', './assets/Stop_sign_sound.wav');
         this.load.audio('crateSound','./assets/crate_sound.wav')
-        this.load.image('menuBackground', './assets/Menu_art_2.png');//temporary background
+        this.load.image('menuBackground', './assets/Menu_art_2.png');//menu background
         this.load.image('playButton', './assets/Button-bg.png');//button
         this.load.image('spaceBar', './assets/spacebar-icon.png');//stop sign
         this.load.image('redApple', './assets/red_apple_core_3.png');//red apple
@@ -34,7 +34,7 @@ class Menu extends Phaser.Scene {
             fontFamily: 'Impact',
             fontSize: '40px',
             backgroundColor: '',
-            color: '#1BB829',
+            color: '#52F0F7',
             align: 'right',
             padding: {
                 top: 5,
