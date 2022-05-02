@@ -1,5 +1,5 @@
 var addScore;
-var highScore = 0;
+var highScore = 0; // tracks high score
 class Play extends Phaser.Scene{
     constructor() {
         super("playScene");
@@ -188,6 +188,7 @@ class Play extends Phaser.Scene{
         this.pScore = 0;
         //this.pointText = this.add.text(game.config.width/2 + 200,game.config.height/2 - 270, 'Points: ', textConfig);
         this.scoreLeft = this.add.text(game.config.width/2 + 300,game.config.height/2 - 270,  this.pScore, textConfig);
+
         //initilizes and displays high score
         this.highScoreMid = this.add.text(game.config.width/2 + 320,game.config.height/2 - 220, highScore, {fontFamily: 'Courier',fontSize: '18px',color: 'black',align: 'left'});
         this.add.text(game.config.width/2 +260,game.config.height/2 - 220, 'Best:', {fontFamily: 'Courier',fontSize: '18px',color: 'black',align: 'left'});
@@ -216,14 +217,13 @@ class Play extends Phaser.Scene{
 
         //Game over flag
         this.gameOver = false;
-        // spawns projectile every 1.5-2 seconds and if collides with player displays Game Over and ends game song
+        // spawns projectile every 2.5-3 seconds and if collides with player displays Game Over and ends game song
         this.time.addEvent({
             delay: this.randomTimer(), callback: () => {
-                //let isOutOfBound = false;
-                
+                // uses random number from 0-6 to spawn projectiles
                 let randomSpawn = Math.floor(Math.random() * 2);
                 let ranNumber = Math.floor(Math.random() * 6);
-                // uses random number from 0-3 to spawn projectiles
+
                 if (!this.gameOver && ranNumber == 0) {
                     throwSound.play();
                     if (randomSpawn == 0) {
@@ -241,6 +241,8 @@ class Play extends Phaser.Scene{
                     projectile.play('bottleSpin');
                     projectile.body.gravity.x = -450;
                     console.log(this.pScore);
+
+                    //goes faster after every score of 500 with max speed after 2000
                     if (this.pScore > 0 && this.pScore < 500) {
                         projectile.body.gravity.x += 0;
                     } else if (this.pScore > 500 && this.pScore < 1000) {
@@ -279,7 +281,8 @@ class Play extends Phaser.Scene{
                     projectile = this.physics.add.sprite(game.config.width / 2 + 900, game.config.height / 2 + 110, 'stopSign').setScale(1).setSize(100, 200).setOffset(80, 50);
                     // - 450 before speed up, -750 after speed up
                     projectile.body.gravity.x = -450;
-                    console.log(this.pScore);
+
+                    //goes faster after every score of 500 with max speed after 2000
                     if (this.pScore > 0 && this.pScore < 500) {
                         projectile.body.gravity.x += 0;
                     } else if (this.pScore > 500 && this.pScore < 1000) {
@@ -289,13 +292,13 @@ class Play extends Phaser.Scene{
                     } else
                         projectile.body.gravity.x += -700;
                     projectile.body.gravity.y = -2600;
-                    console.log(projectile.body.gravity.x)
                 }
                 if (!this.gameOver && ranNumber == 5) { // box projectile
                     projectile = this.physics.add.sprite(game.config.width / 2 + 900, game.config.height / 2 + 186, 'box').setScale(0.6).setSize(170, 200).setOffset(50, 50); //setSize(width, height), setOffset(left-/right+,up-/down+)
                     // - 450 before speed up, -750 after speed up
                     projectile.body.gravity.x = -450;
-                    console.log(this.pScore);
+
+                    //goes faster after every score of 500 with max speed after 2000
                     if (this.pScore > 0 && this.pScore < 500) {
                         projectile.body.gravity.x += 0;
                     } else if (this.pScore > 500 && this.pScore < 1000) {
@@ -305,7 +308,6 @@ class Play extends Phaser.Scene{
                     } else
                         projectile.body.gravity.x += -700;
                     projectile.body.gravity.y = -2600;
-                    console.log(projectile.body.gravity.x)
                 }
 
 
@@ -322,6 +324,7 @@ class Play extends Phaser.Scene{
                 
                
                 this.physics.add.overlap(this.baby, projectile, () => { // overlapping function
+                    //plays a particular collision sound
                     if (ranNumber == 0) {
                         appleSounds.play();
                     }
@@ -394,7 +397,7 @@ class Play extends Phaser.Scene{
         if(this.pScore % 500 == 0 && this.pScore < 2000) // adds to background speed every score of 500 max 2000
             this.SCROLL_SPEED += 1.5;
         if(this.pScore > highScore)
-            highScore += 1;
+            highScore += 1; // adds to high score
     }
 
     // spawns items either 2.5 or 3 seconds
