@@ -11,10 +11,10 @@ Date Completed: 5/2/2022
 Creative tilt justification:
 We have indeed looked beyond the class examples by applying different types of physics to each object.
 we also added a high score system below the current score to track the player's highest score across
-scenes. Also at every score of +500, background and some objects will go faster. The game also does use music 
-and art that we are proud of. We implemented little sounds that are played for all collisions and jumps. We
-also put in little animations for some objects the baby, and the character's stroller when on the ground or when
-the player jumps for more visual style.
+scenes. Also at every score of +500, background and some objects will go faster. A little sound will also 
+play. The game also does use music and art that we are proud of. We implemented little sounds that are played 
+for all collisions and jumps. We also put in little animations for some objects, the baby, and the character's 
+stroller when on the ground or when the player jumps for more visual style.
 */
 
 'use strict';
