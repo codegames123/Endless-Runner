@@ -1,9 +1,8 @@
 var addScore;
 var platforms1
 var platforms2
-var rock;
+//var rock;
 var highScore = 0;
-var rock2;
 //var isOutOfBound = true;
 class Play extends Phaser.Scene{
     constructor() {
@@ -25,8 +24,10 @@ class Play extends Phaser.Scene{
         this.load.atlas('beerBottleS', 'beer_bottle_spritesheet.png', 'beer_bottle.json');
         this.load.atlas('bottleS', 'bottle_spritesheet.png', 'bottle.json');
         this.load.atlas('bananaS', 'banana_spritesheet.png', 'banana.json');
+        //this.load.spritesheet('jumpAnim', 'baby_car_tilt1.png',{frameWidth: };
+        this.load.atlas('jumpAnim', 'baby_car_tilt.png', 'baby_car_tilt_spritesheet.json');
         this.load.image('greenApple', 'apple_core_2.png');
-        this.load.image('background', 'background.jpg');
+        this.load.image('background', 'Endless_Runner_Background.png');
         this.load.image('ground','ground3.png');
         
     }
@@ -38,7 +39,7 @@ class Play extends Phaser.Scene{
         currentScene = 3;
         this.physics.world.gravity.y = 2600;
 
-        this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'background').setOrigin(0);
+        this.background = this.add.tileSprite(game.config.width/2, game.config.height/2, game.config.width, game.config.height + 300, 'background');
 
         platforms1 = this.physics.add.image(game.config.width/2 + 420, game.config.height/2 + 228, 'ground').setScale(2).setSize(40, 20).setOffset(30, 8);
         platforms2 = this.physics.add.image(game.config.width/2 + 420, game.config.height/2 + 228, 'ground').setScale(2).setSize(20, 30).setOffset(40, -9); //setSize(width, height), setOffset(left/right,up/down)
@@ -61,6 +62,18 @@ class Play extends Phaser.Scene{
         let throwSound = this.sound.add('throwSound', {loop: false});
 
         //creates animations
+        this.anims.create({ 
+            key: 'jump', 
+            frames: this.anims.generateFrameNames('jumpAnim', {      
+                prefix: 'jump',
+                start: 1,
+                end: 8,
+                suffix: '',
+                zeroPad: 4 
+            }), 
+            frameRate: 10,
+            repeat: 0 
+        });
         this.anims.create({ 
             key: 'babyAnim', 
             frames: this.anims.generateFrameNames('baby', {      
@@ -153,7 +166,7 @@ class Play extends Phaser.Scene{
         //rock = new Rock(this, game.config.width + (game.config.height / 15) * 6, (game.config.height/15) * 4, 'rock', 0).setOrigin(0, 0);
         // rock = this.physics.add.sprite(game.config.width/2 + 600,game.config.height/2 - 170,'rock');
         // rock.body.velocity.x = -1900;
-        //var rock = this.physics.add.group();
+        let rock = this.physics.add.group();
         //rock.getBounds();
         // rock = this.physics.add.group({
         //     key: 'rock',
@@ -162,7 +175,7 @@ class Play extends Phaser.Scene{
         //     //setXY: { x: game.config.width/2, y: game.config.height/2},
         //     setXY: { x: 12, y: 0, stepX: 70 }
         // });
-
+        
         //Text formats
         let textConfig = {
             fontFamily: 'Courier',
@@ -195,6 +208,7 @@ class Play extends Phaser.Scene{
         this.player.setCollideWorldBounds(true);
         this.baby.setCollideWorldBounds(true);
 
+        //this.player.play('jump');
         // set up Phaser-provided cursor key input
         cursors = this.input.keyboard.createCursorKeys();
         
@@ -229,14 +243,13 @@ class Play extends Phaser.Scene{
                     //console.log(isOutOfBound);
                 }
                 if (!this.gameOver && ranNumber == 1) { // projectile from the right side
-                    rock = this.physics.add.sprite(game.config.width / 2 + 505, game.config.height / 2 + (Math.floor(Math.random() * (250 - (-250) + 1)) - 250), 'bottleS').setScale(0.8);// bottom // 550 // from -250 to 250
+                    rock = this.physics.add.sprite(game.config.width / 2 + 505, game.config.height / 2 + (Math.floor(Math.random() * (250 - (-80) + 1)) - 80), 'bottleS').setScale(0.8);// bottom // 550 // from top -250 to bottom 250
                     rock.play('bottleSpin');
                     rock.body.gravity.x = -350;//-470 -300
                     rock.body.gravity.y = -2600;
                     this.isSpawn = true;
                 }
                 if (!this.gameOver && ranNumber == 2) { // projectiles from the ground
-                    //let randomSpawn = Math.floor(Math.random() * 3);
                     throwSound.play();
                     if (randomSpawn == 0) {
                         rock = this.physics.add.sprite(game.config.width / 2 + 450, game.config.height / 2 + 280, 'beerBottleS').setScale(0.8); // spawns beer bottle
@@ -360,9 +373,9 @@ class Play extends Phaser.Scene{
         //return Math.floor(Math.random() * 5000) + 1000;
         let num = Math.floor(Math.random() * 3);
         if(num == 0) {
-            return 2300; // 0.5 seconds
+            return 2500; // 0.5 seconds
         }else {
-            return 2800; // 2 seconds
+            return 3000; // 2 seconds
         }
     }
 
@@ -403,24 +416,43 @@ class Play extends Phaser.Scene{
 	    // if so, we have jumps to spare
 	    if(!this.gameOver && this.baby.isGrounded ) {
             //this.player.anims.play('walk', true);
+            
+            //this.player.stop('jump');
+            //this.player.play('babycar');
 	    	this.jumps = this.MAX_JUMPS;
 	    	this.jumping = false;
 	    }
         // allow steady velocity change up to a certain key down duration
 	    if(!this.gameOver && this.jumps > 0 && Phaser.Input.Keyboard.DownDuration(cursors.space, 150)) {
+             
             this.baby.body.velocity.y = this.JUMP_VELOCITY;
-            if(this.jumps> 1)
+            
+            if(this.jumps> 1) {
+                //if(Phaser.Input.Keyboard.DownDuration(cursors.space))
+                    
                 this.player.body.velocity.y = this.JUMP_VELOCITY;
+                //this.player.stop('jump');
+            }
+
+            //this.player.stop('jump');
 	        this.jumping = true;
+            
 	    } 
         // finally, letting go of the UP key subtracts a jump
 	    if(!this.gameOver && this.jumping && Phaser.Input.Keyboard.UpDuration(cursors.space) ) {
-	    	this.jumps--;
+	    	this.player.play('babycar');
+            this.jumps--;
 	    	this.jumping = false;
 	    }
-        if(!this.gameOver && Phaser.Input.Keyboard.JustDown(cursors.space) && this.jumping)
-                this.sound.play('jumpSound', {volume: 0.3});
-
+        if(!this.gameOver && Phaser.Input.Keyboard.JustDown(cursors.space) && this.jumping) {
+            //  if(!this.jumping)
+            //     this.player.stop('jump');
+            // else 
+            this.player.stop('babycar');
+            if(this.jumps> 1)
+                this.player.play('jump');
+            this.sound.play('jumpSound', {volume: 0.3});
+        }
         this.scoreLeft.text = this.pScore; // updates score +10
         this.highScoreMid.text = highScore; // updates high score
     }

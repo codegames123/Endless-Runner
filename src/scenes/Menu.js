@@ -45,7 +45,7 @@ class Menu extends Phaser.Scene {
         this.add.text(game.config.width / 2, game.config.height / 2 - 235, 'Baby Rush', menuTextConfig).setOrigin(0.5);
         menuTextConfig.fontFamily = 'papyrus';
         menuTextConfig.fontSize = 19;
-        this.add.text(game.config.width / 2 - 255, game.config.height - 10, 'Controls: 2x                          to Jump or Double Jump', menuTextConfig).setOrigin(0.5);
+        this.add.text(game.config.width / 2 - 255, game.config.height - 20, 'Controls: 2x                          to Jump or Double Jump', menuTextConfig).setOrigin(0.5);
         //this.add.image(game.config.width / 2, game.config.height / 2 +35, 'playButton', {width: 100}).setScale(0.8);
         const clickPlay = this.add.text(game.config.width / 2 - 50, game.config.height / 2, 'Play', { fontFamily: 'Segoe Script', fontSize: 60, color: 'purple' }).setInteractive()
             .on('pointerdown', () =>  {
