@@ -11,7 +11,7 @@ class Menu extends Phaser.Scene {
         this.load.audio('canSound', './assets/Can-rattle.wav');
         this.load.audio('bananaSound', './assets/Banana-peel.wav');
         this.load.audio('throwSound', './assets/Throw-sound.wav');
-        this.load.image('menuBackground', './assets/menuBackground1.png');//temporary background
+        this.load.image('menuBackground', './assets/Menu_art_2.png');//temporary background
         this.load.image('playButton', './assets/Button-bg.png');//button
         this.load.image('spaceBar', './assets/spacebar-icon.png');//stop sign
         this.load.image('redApple', './assets/red_apple_core_3.png');//red apple
@@ -40,9 +40,9 @@ class Menu extends Phaser.Scene {
             fixedWidth: 0
         }
         
-        this.add.image(game.config.width / 2, game.config.height / 2, 'menuBackground');
-        menuTextConfig.fontFamily = 'MV Boli';
-        this.add.text(game.config.width / 2, game.config.height / 2 - 235, 'Baby Rush', menuTextConfig).setOrigin(0.5);
+        this.add.tileSprite(game.config.width/2, game.config.height/2, game.config.width +580, game.config.height + 400, 'menuBackground').setScale(0.65);
+        // menuTextConfig.fontFamily = 'MV Boli';
+        // this.add.text(game.config.width / 2, game.config.height / 2 - 235, 'Baby Rush', menuTextConfig).setOrigin(0.5);
         menuTextConfig.fontFamily = 'papyrus';
         menuTextConfig.fontSize = 19;
         this.add.text(game.config.width / 2 - 255, game.config.height - 20, 'Controls: 2x                          to Jump or Double Jump', menuTextConfig).setOrigin(0.5);

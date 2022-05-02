@@ -27,4 +27,4 @@ let config = {
 
 let game = new Phaser.Game(config);
 
-let keyR, keyM;
+let keySpace, keyM;
