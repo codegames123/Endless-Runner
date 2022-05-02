@@ -7,23 +7,23 @@ class Play extends Phaser.Scene{
 
     preload(){
         this.load.path = 'assets/';
-        this.load.atlas('player', 'baby_car_spritesheet.png', 'baby_car_sprite.json'); // stroller
-        this.load.atlas('baby', 'da_baby.png', 'da_baby_spritesheet.json'); // baby
         this.load.image('redApple', 'red_apple_core.png');
         this.load.image('redApple2', 'red_apple_core_3.png');
         this.load.image('stopSign', './assets/stop_sign.png');
         this.load.image('box', './assets/wooden_box.png');
+        this.load.image('greenApple', 'apple_core_2.png');
+        this.load.image('background', 'Endless_Runner_Background.png');
+        this.load.image('ground','Ground_tile.png');
+        this.load.atlas('player', 'baby_car_spritesheet.png', 'baby_car_sprite.json'); // stroller
+        this.load.atlas('baby', 'da_baby.png', 'da_baby_spritesheet.json'); // baby
         this.load.atlas('greenAppleSpriteS', 'greenAppleSprite.png', 'greenAppleSprite.json');
         //this.load.atlas('redAppleSpriteS', 'red_apple_core_sprite_sheet.png', 'red_apple_core.json');
         this.load.atlas('babyStun', 'baby_stun.png', 'baby_stun_spritesheet.json');
         this.load.atlas('beerBottleS', 'beer_bottle_spritesheet.png', 'beer_bottle.json');
         this.load.atlas('bottleS', 'bottle_spritesheet.png', 'bottle.json');
         this.load.atlas('bananaS', 'banana_spritesheet.png', 'banana.json');
-        //this.load.spritesheet('jumpAnim', 'baby_car_tilt1.png',{frameWidth: };
         this.load.atlas('jumpAnim', 'baby_car_tilt.png', 'baby_car_tilt_spritesheet.json');
-        this.load.image('greenApple', 'apple_core_2.png');
-        this.load.image('background', 'Endless_Runner_Background.png');
-        this.load.image('ground','Ground_tile.png');
+        
         
     }
     create() { 
