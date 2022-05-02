@@ -2,7 +2,7 @@
 Collaborators: Omar Bahlool, Yi Ding, James Pollard, Nathan Laureta
 Jobs: 
     Background, menu, and ground art by Omar Bahlool 
-    Sprites and projectiles by Yi Ding
+    Sprites, projectiles, and animations by Yi Ding
     UI and sounds by James Pollard
     Programmer: Nathan Laureta
 Game Title: Baby Rush
