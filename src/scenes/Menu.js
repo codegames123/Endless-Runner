@@ -11,6 +11,9 @@ class Menu extends Phaser.Scene {
         this.load.audio('canSound', './assets/Can-rattle.wav');
         this.load.audio('bananaSound', './assets/Banana-peel.wav');
         this.load.audio('throwSound', './assets/Throw-sound.wav');
+        this.load.audio('beerBreak', './assets/Glass_sound.wav');
+        this.load.audio('stopSound', './assets/Stop_sign_sound.wav');
+        this.load.audio('crateSound','./assets/crate_sound.wav')
         this.load.image('menuBackground', './assets/Menu_art_2.png');//temporary background
         this.load.image('playButton', './assets/Button-bg.png');//button
         this.load.image('spaceBar', './assets/spacebar-icon.png');//stop sign

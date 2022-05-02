@@ -1,10 +1,5 @@
 var addScore;
-var platforms1
-var platforms2
-//var projectile;
 var highScore = 0;
-//var isOutOfBound = true;
-
 class Play extends Phaser.Scene{
     constructor() {
         super("playScene");
@@ -17,6 +12,7 @@ class Play extends Phaser.Scene{
         this.load.image('redApple', 'red_apple_core.png');
         this.load.image('redApple2', 'red_apple_core_3.png');
         this.load.image('stopSign', './assets/stop_sign.png');
+        this.load.image('box', './assets/wooden_box.png');
         this.load.atlas('greenAppleSpriteS', 'greenAppleSprite.png', 'greenAppleSprite.json');
         //this.load.atlas('redAppleSpriteS', 'red_apple_core_sprite_sheet.png', 'red_apple_core.json');
         this.load.atlas('babyStun', 'baby_stun.png', 'baby_stun_spritesheet.json');
@@ -35,32 +31,31 @@ class Play extends Phaser.Scene{
         this.JUMP_VELOCITY = -700;
         this.MAX_JUMPS = 2;
         this.SCROLL_SPEED = 4;
-        currentScene = 3;
         this.physics.world.gravity.y = 2600;
         
-        platforms1 = this.physics.add.image(game.config.width/2 + 420, game.config.height/2 + 228, 'ground').setScale(2).setSize(40, 20).setOffset(-5, 30);
-        platforms2 = this.physics.add.image(game.config.width/2 + 420, game.config.height/2 + 228, 'ground').setScale(2).setSize(20, 30).setOffset(5, 5); //setSize(width, height), setOffset(left-/right+,up-/down+)
-        //platforms.create(game.config.width/2, game.config.height/2 + 228, 'ground').setScale(2) 
+        //sets platforms
+        let platforms1 = this.physics.add.image(game.config.width/2 + 420, game.config.height/2 + 228, 'ground').setScale(2).setSize(40, 20).setOffset(-5, 30);
+        let platforms2 = this.physics.add.image(game.config.width/2 + 420, game.config.height/2 + 228, 'ground').setScale(2).setSize(20, 30).setOffset(5, 5); //setSize(width, height), setOffset(left-/right+,up-/down+)
         platforms1.setImmovable(true);
         platforms1.body.allowGravity = false;
-
         platforms2.setImmovable(true);
         platforms2.body.allowGravity = false;
 
         this.background = this.add.tileSprite(game.config.width/2, game.config.height/2, game.config.width, game.config.height + 321, 'background'); // (position-x, position-y, width, height, 'background name')
 
-        
-        
         let song = this.sound.add('baby_song', {loop: true}); // initilizes background music
         song.play(); //plays song
 
         let selectSound = this.sound.add('selectSound', {loop: false}); // initilizes select sound
         let gameOverSound = this.sound.add('game_overSound', {loop: false, volume: 0.1});//initializes game over sound
         let jumpSound = this.sound.add('jumpSound', {loop: false}); // initializes jump sound
-        let appleSounds = this.sound.add('appleSound', {loop: false});
-        let canSound = this.sound.add('canSound', {loop: false});
-        let bananaSound = this.sound.add('bananaSound', {loop: false});
-        let throwSound = this.sound.add('throwSound', {loop: false});
+        let appleSounds = this.sound.add('appleSound', {loop: false}); // initlizes apple hit sound
+        let canSound = this.sound.add('canSound', {loop: false}); // initilizes can hit sound
+        let bananaSound = this.sound.add('bananaSound', {loop: false}); // initilizes banana hit sound
+        let throwSound = this.sound.add('throwSound', {loop: false}); // initilizes throw sound
+        let beerBreak = this.sound.add('beerBreak', {loop: false}); // initilizes beer break sound
+        let stopSound = this.sound.add('stopSound', {loop: false}); // initilizes stop sign hit sound
+        let crateSound = this.sound.add('crateSound',{loop: false}); // initilizes crate hit sound
 
         //creates animations
         this.anims.create({ 
@@ -68,7 +63,7 @@ class Play extends Phaser.Scene{
             frames: this.anims.generateFrameNames('jumpAnim', {      
                 prefix: 'jump',
                 start: 1,
-                end: 8,
+                end: 5,
                 suffix: '',
                 zeroPad: 4 
             }), 
@@ -164,9 +159,6 @@ class Play extends Phaser.Scene{
         keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
-        //projectile = new projectile(this, game.config.width + (game.config.height / 15) * 6, (game.config.height/15) * 4, 'projectile', 0).setOrigin(0, 0);
-        // projectile = this.physics.add.sprite(game.config.width/2 + 600,game.config.height/2 - 170,'projectile');
-        // projectile.body.velocity.x = -1900;
         let projectile = this.physics.add.group();
 
         //this.stopSign = new Obstacles(this,game.config.width/2 , game.config.height/2 - 17, 'stopSign', 0 , 6).setOrigin(0, 0);
@@ -193,7 +185,7 @@ class Play extends Phaser.Scene{
         }
 
         //initilize score;
-        this.pScore = 400;
+        this.pScore = 0;
         //this.pointText = this.add.text(game.config.width/2 + 200,game.config.height/2 - 270, 'Points: ', textConfig);
         this.scoreLeft = this.add.text(game.config.width/2 + 300,game.config.height/2 - 270,  this.pScore, textConfig);
         //initilizes and displays high score
@@ -224,14 +216,13 @@ class Play extends Phaser.Scene{
 
         //Game over flag
         this.gameOver = false;
-        this.isSpawn = false;
         // spawns projectile every 1.5-2 seconds and if collides with player displays Game Over and ends game song
         this.time.addEvent({
             delay: this.randomTimer(), callback: () => {
                 //let isOutOfBound = false;
                 
                 let randomSpawn = Math.floor(Math.random() * 2);
-                let ranNumber =Math.floor(Math.random() * 4);
+                let ranNumber = Math.floor(Math.random() * 6);
                 // uses random number from 0-3 to spawn projectiles
                 if (!this.gameOver && ranNumber == 0) {
                     throwSound.play();
@@ -240,20 +231,26 @@ class Play extends Phaser.Scene{
                     } else if (randomSpawn == 1) {
                         projectile = this.physics.add.sprite(game.config.width / 2 + 270, game.config.height / 2 + 280, 'redApple2').setScale(0.8);
                     }
-                    //projectile.body.gravity.x = -1000;
                     projectile.body.gravity.y = -2000;
-                    projectile.body.velocity.x = -380;
+                    projectile.body.velocity.x = -330;
                     projectile.body.velocity.y = -630;
-                    this.isSpawn = true;
-                    //isOutOfBound = Phaser.Geom.Rectangle.Overlaps(this.physics.world.bounds, projectile.getBounds()); // checks if item is in the screen
-                    //console.log(isOutOfBound);
+                    
                 }
-                if (!this.gameOver && ranNumber == 1) { // projectile from the right side
-                    projectile = this.physics.add.sprite(game.config.width / 2 + 505, game.config.height / 2 + (Math.floor(Math.random() * (250 - (-80) + 1)) - 80), 'bottleS').setScale(0.8);// bottom // 550 // from top -250 to bottom 250
+                if (!this.gameOver && ranNumber == 1) { // can bottle randomly spawn from right side
+                    projectile = this.physics.add.sprite(game.config.width / 2 + 505, game.config.height / 2 + (Math.floor(Math.random() * (220 - (-80) + 1)) - 80), 'bottleS').setScale(0.8);// bottom // 550 // from top -250 to bottom 250
                     projectile.play('bottleSpin');
-                    projectile.body.gravity.x = -350;//-470 -300
+                    projectile.body.gravity.x = -450;
+                    console.log(this.pScore);
+                    if (this.pScore > 0 && this.pScore < 500) {
+                        projectile.body.gravity.x += 0;
+                    } else if (this.pScore > 500 && this.pScore < 1000) {
+                        projectile.body.gravity.x += -300;
+                    } else if (this.pScore > 1000 && this.pScore < 1500) {
+                        projectile.body.gravity.x += -600;
+                    } else
+                        projectile.body.gravity.x += -700;
+                    console.log(projectile.body.gravity.x)
                     projectile.body.gravity.y = -2600;
-                    this.isSpawn = true;
                 }
                 if (!this.gameOver && ranNumber == 2) { // projectiles from the ground
                     throwSound.play();
@@ -267,34 +264,47 @@ class Play extends Phaser.Scene{
                         projectile = this.physics.add.sprite(game.config.width / 2 + 450, game.config.height / 2 + 280, 'greenAppleSpriteS').setScale(0.8); // spawns banana instead
                         projectile.play('applespin');
                     }
-                    //projectile.body.gravity.x = -1000;
                     projectile.body.gravity.y = -2000;
-                    projectile.body.velocity.x = -380;
+                    projectile.body.velocity.x = -345;
                     projectile.body.velocity.y = -730;
-                    this.isSpawn = true;
                 }
-                if (!this.gameOver && ranNumber == 3) { // projectile from the right side 
-                    projectile = this.physics.add.sprite(game.config.width / 2 + 600, game.config.height / 2 - 100, 'greenAppleSpriteS').setScale(0.8);// bottom // 550 // from -250 to 250
-                    projectile.play('applespin');// 600 100
-                    projectile.body.gravity.y = -2300;
+                if (!this.gameOver && ranNumber == 3) { // projectile from top right
+                    throwSound.play();
+                    projectile = this.physics.add.sprite(game.config.width / 2 + 900, game.config.height / 2 - 100, 'greenAppleSpriteS').setScale(0.8);
+                    projectile.play('applespin');
+                    projectile.body.gravity.y = -2400;
                     projectile.body.velocity.x = -800;
-                    
-                    this.isSpawn = true;
                 }
-                if (!this.gameOver && ranNumber == 4) { // projectile from the right side
-                    projectile = this.physics.add.sprite(game.config.width / 2 + 800, game.config.height /2 + 138, 'stopSign').setScale(0.8);// bottom // 550 // from top -250 to bottom 250
-                    projectile.body.gravity.x = -450;// - 450 before speed up, -750 after speed up
-                    projectile.body.gravity.y = -2600;
+                if (!this.gameOver && ranNumber == 4) { // stop sign projectile
+                    projectile = this.physics.add.sprite(game.config.width / 2 + 900, game.config.height / 2 + 110, 'stopSign').setScale(1).setSize(100, 200).setOffset(80, 50);
+                    // - 450 before speed up, -750 after speed up
+                    projectile.body.gravity.x = -450;
                     console.log(this.pScore);
-
-                    if (this.pScore < 2000) {
-                        if (this.pScore > 500 && this.pScore < 1000) {
-                            projectile.body.gravity.x += -300;
-                        } else if (this.pScore > 1000 && this.pScore < 1500) {
-                            projectile.body.gravity.x += -600;
-                        }
-                    }
+                    if (this.pScore > 0 && this.pScore < 500) {
+                        projectile.body.gravity.x += 0;
+                    } else if (this.pScore > 500 && this.pScore < 1000) {
+                        projectile.body.gravity.x += -300;
+                    } else if (this.pScore > 1000 && this.pScore < 1500) {
                         projectile.body.gravity.x += -600;
+                    } else
+                        projectile.body.gravity.x += -700;
+                    projectile.body.gravity.y = -2600;
+                    console.log(projectile.body.gravity.x)
+                }
+                if (!this.gameOver && ranNumber == 5) { // box projectile
+                    projectile = this.physics.add.sprite(game.config.width / 2 + 900, game.config.height / 2 + 186, 'box').setScale(0.6).setSize(170, 200).setOffset(50, 50); //setSize(width, height), setOffset(left-/right+,up-/down+)
+                    // - 450 before speed up, -750 after speed up
+                    projectile.body.gravity.x = -450;
+                    console.log(this.pScore);
+                    if (this.pScore > 0 && this.pScore < 500) {
+                        projectile.body.gravity.x += 0;
+                    } else if (this.pScore > 500 && this.pScore < 1000) {
+                        projectile.body.gravity.x += -300;
+                    } else if (this.pScore > 1000 && this.pScore < 1500) {
+                        projectile.body.gravity.x += -600;
+                    } else
+                        projectile.body.gravity.x += -700;
+                    projectile.body.gravity.y = -2600;
                     console.log(projectile.body.gravity.x)
                 }
 
@@ -320,7 +330,7 @@ class Play extends Phaser.Scene{
                     }
                     if (ranNumber == 2) {
                         if (randomSpawn == 0) {
-
+                            beerBreak.play();
                         } else if (randomSpawn == 1) {
                             bananaSound.play();
                         } else if (randomSpawn == 2) {
@@ -330,14 +340,17 @@ class Play extends Phaser.Scene{
                     if (ranNumber == 3) {
                         appleSounds.play();
                     }
+                    if(ranNumber == 4) {
+                        stopSound.play();
+                    }
+                    if(ranNumber == 5) {
+                        crateSound.play();
+                    }
+
                     gameOverSound.play(); // plays gameover sound
-                    //projectile.setActive(false).setVisible(false);
                     this.baby.stop('babyAnim');
                     this.baby.play('babystun');
                     projectile.destroy();
-                    //projectile2.destroy();
-                    // projectile2.setActive(false).setVisible(false);
-                    // projectile2.destroy();
                     this.gameOver = true;
                     this.add.text(game.config.width / 2, game.config.height / 2, 'Game Over!', { fontSize: 50, color: 'orange' }).setOrigin(0.5);
                     const clickRestart = this.add.text(game.config.width / 2 - 80, game.config.height / 2 + 40, 'Restart?', { fontFamily: 'Cursive', fontSize: 30, color: '#52F0F7' }).setInteractive()
@@ -370,78 +383,41 @@ class Play extends Phaser.Scene{
             }, callbackScope: this, loop: true
 
         });
-        addScore = this.time.addEvent({ delay: 500, callback: this.addToScore, callbackScope: this, loop: true }); //calls addToScore every second
+        addScore = this.time.addEvent({ delay: 100, callback: this.addToScore, callbackScope: this, loop: true }); //calls addToScore every second
         
     }
 
+    //adds score by 1 every millisecond
     addToScore() {
         if(!this.gameOver) //if game over, stops points from adding
-            this.pScore += 10;
+            this.pScore += 1;
         if(this.pScore % 500 == 0 && this.pScore < 2000) // adds to background speed every score of 500 max 2000
             this.SCROLL_SPEED += 1.5;
         if(this.pScore > highScore)
-            highScore += 10;
+            highScore += 1;
     }
 
-    randomTimer() { // for future collision spawn rate
-        //return Math.floor(Math.random() * 5000) + 1000;
+    // spawns items either 2.5 or 3 seconds
+    randomTimer() { 
         let num = Math.floor(Math.random() * 3);
         if(num == 0) {
-            return 2500; // 0.5 seconds
+            return 2500; 
         }else {
-            return 3000; // 2 seconds
+            return 3000; 
         }
     }
 
-    bounds(){
-        let bounds = projectile.getBounds();
-        console.log(bounds);
-    }
-
     update() {
-
-        // if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) { // if R is pressed, restarts game
-        //     this.scene.restart();
-        // }
-        // if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyM)) { // if M is pressed, goes back to menu
-        //     this.scene.start("menuScene");
-        // }
-        
-        //let isOutOfBound = Phaser.Geom.Rectangle.Overlaps(this.physics.world.bounds, getBounds());
-        // if(bounds > ) {
-        //     projectile.destroy();
-        // }
         // makes background scroll diagonally (tweak for more "speed")
         if (!this.gameOver) {
             this.background.tilePositionX += this.SCROLL_SPEED;
             this.groundScroll.tilePositionX += this.SCROLL_SPEED;
-            //this.stopSign.update(); 
-            //this.sprite.update(); 
-            //this.background.tilePositionY += 2;
         }
-
-        // if (this.checkCollision(this.sprite, this.stopSign)) {
-        //    //this.stopSign.reset();
-        //    //console.log(this.baby);
-        //     console.log('collided');
-        // }
-        
-        
-
-        // if (!this.gameOver) {
-        //     projectile.update();
-        // }
-
-        
 
 		// check if player is grounded
 	    this.baby.isGrounded = this.baby.body.touching.down;
 	    // if so, we have jumps to spare
 	    if(!this.gameOver && this.baby.isGrounded ) {
-            //this.stroller.anims.play('walk', true);
-            
-            //this.stroller.stop('jump');
-            //this.stroller.play('babycar');
 	    	this.jumps = this.MAX_JUMPS;
 	    	this.jumping = false;
 	    }
@@ -450,14 +426,9 @@ class Play extends Phaser.Scene{
              
             this.baby.body.velocity.y = this.JUMP_VELOCITY;
             
-            if(this.jumps> 1) {
-                //if(Phaser.Input.Keyboard.DownDuration(cursors.space))
-                    
+            if(this.jumps> 1) { // leave stroller behind on double jump
                 this.stroller.body.velocity.y = this.JUMP_VELOCITY;
-                //this.stroller.stop('jump');
             }
-
-            //this.stroller.stop('jump');
 	        this.jumping = true;
             
 	    } 
@@ -468,40 +439,11 @@ class Play extends Phaser.Scene{
 	    	this.jumping = false;
 	    }
         if(!this.gameOver && Phaser.Input.Keyboard.JustDown(cursors.space) && this.jumping) {
-            //  if(!this.jumping)
-            //     this.stroller.stop('jump');
-            // else 
-            this.stroller.stop('babycar');
             if(this.jumps> 1)
                 this.stroller.play('jump');
             this.sound.play('jumpSound', {volume: 0.3});
         }
-        
-
         this.scoreLeft.text = this.pScore; // updates score +10
         this.highScoreMid.text = highScore; // updates high score
     }
-
-    // checkCollision(rocket, ship) {
-    //     // simple AABB checking
-    //     if (rocket.x < ship.x + ship.width/2 - 300 &&
-    //         rocket.x + rocket.width / 2 +15 > ship.x &&
-    //         rocket.y < ship.y + ship.height &&
-    //         rocket.height + rocket.y > ship.y) {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
-    // checkCollision(rocket, ship) {
-    //     // simple AABB checking
-    //     if (rocket.x < ship.x + ship.width &&
-    //         rocket.x + rocket.width > ship.x &&
-    //         rocket.y < ship.y + ship.height &&
-    //         rocket.height + rocket.y > ship.y) {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
 }
